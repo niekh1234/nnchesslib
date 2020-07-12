@@ -18,13 +18,19 @@ using namespace nnchesslib;
 struct BoardInfo
 {
     //Copied from move
-
+    bool whiteCastleShort;
+    bool whiteCastleLong;
+    bool blackCastleShort;
+    bool blackCastleLong;
+    
     int fiftyMoveRule;
     int plyCount;
 
     //Uncopied from move
+    Piece capturedPiece;
+    BoardInfo* previousBoard;
     int repetition;
-}
+};
 
 class ChessBoard
 {
@@ -40,5 +46,5 @@ class ChessBoard
 
         bool whiteToMove;
     public:
-        void generateFromFen();
+        ChessBoard(std::string fen);
 };
