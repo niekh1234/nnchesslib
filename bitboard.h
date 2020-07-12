@@ -1,12 +1,33 @@
 #include <string>
 #include <bitset>
 
-int test();
+#pragma once
 
-typedef unsigned long long int UINT_64;
+namespace nnchesslib
+{
+    class BitBoard
+    {
+        public:
 
-namespace cppchess{
+            //Attributes
+            std::bitset<64> board;
 
-class Bitboard{
-};
+            //Constructors
+            BitBoard();
+
+            //IO
+            std::string getBoardString();
+
+            //Interact with individual points
+            void set(int x, int y, bool set);
+            int get(int x, int y);
+
+            //Interact with lines
+            void setFile(int y);
+            void setRank(int x);
+
+            //Interact with entire board
+            void setAll(bool val);
+            void reset();
+    };
 }
