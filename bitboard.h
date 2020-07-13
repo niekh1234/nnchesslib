@@ -13,7 +13,7 @@ namespace nnchesslib
             std::bitset<64> board;
 
             //Constructors
-            BitBoard();
+            // BitBoard();
 
             //IO
             std::string getBoardString();

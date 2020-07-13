@@ -27,7 +27,7 @@ struct BoardInfo
     int plyCount;
 
     //Uncopied from move
-    Piece capturedPiece;
+    // Piece capturedPiece;
     BoardInfo* previousBoard;
     int repetition;
 };
@@ -46,5 +46,10 @@ class ChessBoard
 
         bool whiteToMove;
     public:
-        ChessBoard(std::string fen);
+        std::string fen;
+        ChessBoard(std::string fenRepresentation){
+            fen = fenRepresentation;
+            // next step -> fen to board representation
+            // -> determine if valid fen.
+        }
 };
