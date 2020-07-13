@@ -9,7 +9,11 @@
 
 // manipulate bitboards (maybe for different file)
 // ---make move, (push move, pop move)
+#ifndef BOARD_H
+#define BOARD_H
+
 #include <bitboard.h>
+#include <iostream>
 
 #pragma once
 
@@ -45,11 +49,13 @@ class ChessBoard
         BitBoard kings;
 
         bool whiteToMove;
+
+        // Generate bitboards corresponding to a given fen.
+        void generateBitBoards(std::string fen);
     public:
-        std::string fen;
-        ChessBoard(std::string fenRepresentation){
-            fen = fenRepresentation;
-            // next step -> fen to board representation
-            // -> determine if valid fen.
-        }
+        ChessBoard(std::string fenRepresentation);
+        // Determine whether a fen is valid.
+        bool isValidFen(std::string fen);
 };
+
+#endif

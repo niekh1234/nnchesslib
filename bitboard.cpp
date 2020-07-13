@@ -11,6 +11,13 @@ std::string BitBoard::getBoardString()
     return board.to_string();
 }
 
+void BitBoard::set1D(int i, bool set)
+{
+    assert(0 <= i && i <= 64);
+    if(set)
+        board.set(63 - i);
+}
+
 void BitBoard::set(int x, int y, bool set)
 {
     assert(0 <= x && x <= 7);
@@ -51,4 +58,13 @@ void BitBoard::setFile(int y)
 void BitBoard::reset()
 {
     board.reset();
+}
+
+void BitBoard::printDebug(std::string boardString)
+{
+    for(int i = 0; i < boardString.size(); i++){
+        if(i % 8 == 0){
+            std::cout<<boardString.substr(i, 8)<<"\n";
+        }
+    }
 }

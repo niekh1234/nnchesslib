@@ -5,13 +5,13 @@ using namespace nnchesslib;
 
 int main()
 {
-    ChessBoard test("lmao");
-    std::cout<<test.fen<<std::endl;
+    const std::string testFen = "r1b1k1nr/1p1n1ppp/2pQp3/p3q3/2P5/B7/PP2NPPP/2KR1B1R b kq - 3 11";
+
+    ChessBoard test(testFen);
     // BitBoard pawn;
-    // pawn.set(0,0, true);
-    // pawn.setRank(2);
-    // pawn.setFile(2);
-    // int testNum = pawn.get(7,2);
+    // pawn.setRank(1);
+    // pawn.setRank(6);
+    // pawn.set(1,1, false);
 
     // std::string boardRepr = pawn.getBoardString();
 

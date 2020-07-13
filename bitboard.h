@@ -1,7 +1,8 @@
+#ifndef BITBOARD_H
+#define BITBOARD_H
+
 #include <string>
 #include <bitset>
-
-#pragma once
 
 namespace nnchesslib
 {
@@ -11,14 +12,15 @@ namespace nnchesslib
 
             //Attributes
             std::bitset<64> board;
-
             //Constructors
+
             // BitBoard();
 
             //IO
             std::string getBoardString();
 
             //Interact with individual points
+            void set1D(int i, bool set);
             void set(int x, int y, bool set);
             int get(int x, int y);
 
@@ -29,5 +31,10 @@ namespace nnchesslib
             //Interact with entire board
             void setAll(bool val);
             void reset();
+
+            // Debug
+            void printDebug(std::string boardString);
     };
 }
+
+#endif
