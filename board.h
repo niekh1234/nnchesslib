@@ -21,7 +21,7 @@ using namespace nnchesslib;
 
 struct BoardInfo
 {
-    //Copied from move
+    // Copied from move
     bool whiteCastleShort;
     bool whiteCastleLong;
     bool blackCastleShort;
@@ -30,7 +30,7 @@ struct BoardInfo
     int fiftyMoveRule;
     int plyCount;
 
-    //Uncopied from move
+    // Uncopied from move
     // Piece capturedPiece;
     BoardInfo* previousBoard;
     int repetition;
@@ -56,6 +56,8 @@ class ChessBoard
         ChessBoard(std::string fenRepresentation);
         // Determine whether a fen is valid.
         bool isValidFen(std::string fen);
+        // Cout current instance of board. 
+        void print();
 };
 
 #endif

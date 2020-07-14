@@ -3,30 +3,33 @@
 #include <bitset>
 #include <cassert>
 #include <string>
+#include <types.h>
 
 using namespace nnchesslib;
 
+BitBoard::BitBoard()
+{
+    board = 0;
+}
+
+BitBoard::BitBoard(U64 value)
+{
+    board = value;
+}
+
 std::string BitBoard::getBoardString()
 {
-    return board.to_string();
+    std::string binary = std::bitset<64>(board).to_string();
+    return binary;
 }
 
-void BitBoard::set1D(int i, bool set)
+void BitBoard::set(int square, bool set)
 {
-    assert(0 <= i && i <= 64);
+    assert(0 <= square && square <= 63);
     if(set)
-        board.set(63 - i);
-}
-
-void BitBoard::set(int x, int y, bool set)
-{
-    assert(0 <= x && x <= 7);
-    assert(0 <= y && y <= 7);
-    
-    if(set)
-        board.set(8*y+7-x);
+        board |= ((U64)1 << square);
     else
-        board.reset(8*y+7-x);
+        board &= ~((U64)1 << square);
 }
 
 int BitBoard::get(int x, int y)
@@ -34,37 +37,58 @@ int BitBoard::get(int x, int y)
     assert(0 <= x && x <= 7);
     assert(0 <= y && y <= 7);
     
-    return board[8*(7-y)+x];
+    int val = (board >> (8*y+7-x)) & 1;
+
+    return val;
 }
 
-void BitBoard::setRank(int x)
+void BitBoard::setRank(int y)
+{
+    assert(0 <= y && y <= 7);
+    
+    board |= rank_bb[y]; 
+}
+
+void BitBoard::setFile(int x)
 {
     assert(0 <= x && x <= 7);
 
-    for(int i = 0; i < 8; i++)
-        board.set(i + x*8);
+    board |= file_bb[x];
 }
 
-void BitBoard::setFile(int y)
+void BitBoard::setAll(bool val)
 {
-    assert(0 <= y && y <= 7);
 
-    for(int i = 0; i < 8; i++)
-    {
-        board.set(i*8 + 7 - y);
-    }
 }
 
 void BitBoard::reset()
 {
-    board.reset();
+
 }
 
-void BitBoard::printDebug(std::string boardString)
+void BitBoard::printDebug()
 {
-    for(int i = 0; i < boardString.size(); i++){
-        if(i % 8 == 0){
-            std::cout<<boardString.substr(i, 8)<<"\n";
+    // std::string boardString = getBoardString();
+    // std::cout<<"---------------"<<std::endl;
+    // for(int i = 0; i < boardString.size(); i++){
+    //     if(i % 8 == 0){
+    //         std::cout<<boardString.substr(i, 8)<<"\n";
+    //     }
+    // }
+    // std::cout<<"---------------"<<std::endl;
+    
+    std::string boardString = getBoardString();
+    std::cout<<"---------------"<<std::endl;
+    for (int y = 0; y <= 7; y++)
+    {
+        for (int x = 0; x <= 7; x++)
+        {
+            if (boardString[y*8+x] == '1')
+                std::cout << "1 ";
+            else
+                std::cout << ". ";
         }
+        std::cout << std::endl;
     }
+    std::cout<<"---------------"<<std::endl;
 }

@@ -6,6 +6,8 @@
 namespace nnchesslib
 {
 
+    typedef unsigned long long U64;
+
     const std::string STARTING_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     enum PieceType
@@ -35,10 +37,41 @@ namespace nnchesslib
         A8, B8, C8, D8, E8, F8, G8, H8 
     };
 
+
+    constexpr U64 file_bb[8] = {  0x0101010101010101ULL, 0x0101010101010101ULL << 1,
+                        0x0101010101010101ULL << 2, 0x0101010101010101ULL << 3,
+                        0x0101010101010101ULL << 4, 0x0101010101010101ULL << 5,
+                        0x0101010101010101ULL << 6, 0x0101010101010101ULL << 7};
+
     enum File
     {
-        A_FILE, B_FILE, C_FILE, D_FILE, 
-        E_FILE, F_FILE, G_FILE, H_FILE
+        FILE_A, FILE_B, FILE_C, FILE_D, 
+        FILE_E, FILE_F, FILE_G, FILE_H,
+        FILE_UD
+    };
+
+    constexpr U64 rank_bb[8] = {  (U64)0xFF, (U64)0xFF << (8 * 1), 
+                        (U64)0xFF << (8 * 2), (U64)0xFF << (8 * 3), 
+                        (U64)0xFF << (8 * 4), (U64)0xFF << (8 * 5), 
+                        (U64)0xFF << (8 * 6), (U64)0xFF << (8 * 7)};
+
+    enum Rank
+    {
+        RANK_1, RANK_2, RANK_3, RANK_4, 
+        RANK_5, RANK_6, RANK_7, RANK_8,
+        RANK_UD
+    };
+
+    enum Direction
+    {
+        NORTH = 0,
+        EAST,
+        SOUTH,
+        WEST,
+        NORTH_EAST,
+        NORTH_WEST,
+        SOUTH_EAST,
+        SOUTH_WEST
     };
 }
 

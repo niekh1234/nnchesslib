@@ -3,6 +3,7 @@
 
 #include <string>
 #include <bitset>
+#include <types.h>
 
 namespace nnchesslib
 {
@@ -11,8 +12,10 @@ namespace nnchesslib
         public:
 
             //Attributes
-            std::bitset<64> board;
+            U64 board;
             //Constructors
+            BitBoard();
+            BitBoard(U64 value);
 
             // BitBoard();
 
@@ -20,8 +23,7 @@ namespace nnchesslib
             std::string getBoardString();
 
             //Interact with individual points
-            void set1D(int i, bool set);
-            void set(int x, int y, bool set);
+            void set(int square, bool set);
             int get(int x, int y);
 
             //Interact with lines
@@ -33,7 +35,7 @@ namespace nnchesslib
             void reset();
 
             // Debug
-            void printDebug(std::string boardString);
+            void printDebug();
     };
 }
 

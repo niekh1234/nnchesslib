@@ -134,16 +134,16 @@ void ChessBoard::generateBitBoards(std::string fen)
         else if (isalpha(board[i]))
         {
             // Generate bitboard for white and black
-            if (board[i] >= 'A' && board[i] <= 'Z') white_pieces.set1D(bitIndex, true);
-            if (board[i] >= 'a' && board[i] <= 'z') black_pieces.set1D(bitIndex, true);
+            if (board[i] >= 'A' && board[i] <= 'Z') white_pieces.set(bitIndex, true);
+            if (board[i] >= 'a' && board[i] <= 'z') black_pieces.set(bitIndex, true);
 
             // Generate bitboard for pieces
-            if (board[i] == 'N' || board[i] == 'n') knights.set1D(bitIndex, true);
-            if (board[i] == 'B' || board[i] == 'b') bishops.set1D(bitIndex, true);
-            if (board[i] == 'R' || board[i] == 'r') rooks.set1D(bitIndex, true);
-            if (board[i] == 'Q' || board[i] == 'q') queens.set1D(bitIndex, true);
-            if (board[i] == 'K' || board[i] == 'k') kings.set1D(bitIndex, true);
-            if (board[i] == 'P' || board[i] == 'p') pawns.set1D(bitIndex, true);
+            if (board[i] == 'N' || board[i] == 'n') knights.set(bitIndex, true);
+            if (board[i] == 'B' || board[i] == 'b') bishops.set(bitIndex, true);
+            if (board[i] == 'R' || board[i] == 'r') rooks.set(bitIndex, true);
+            if (board[i] == 'Q' || board[i] == 'q') queens.set(bitIndex, true);
+            if (board[i] == 'K' || board[i] == 'k') kings.set(bitIndex, true);
+            if (board[i] == 'P' || board[i] == 'p') pawns.set(bitIndex, true);
 
             bitIndex += 1;
         }
@@ -153,5 +153,11 @@ void ChessBoard::generateBitBoards(std::string fen)
     std::bitset<64> _white_pieces = white_pieces.board;
     std::bitset<64> combined = (_rooks & _white_pieces);
     
+    std::cout<<_rooks<<std::endl;
+
+}
+
+//function for printing / combining all the bitboards to form a readable board. 
+void ChessBoard::print(){
 
 }
