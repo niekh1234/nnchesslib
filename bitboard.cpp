@@ -83,7 +83,7 @@ void BitBoard::printDebug()
     {
         for (int x = 0; x <= 7; x++)
         {
-            if (boardString[y*8+x] == '1')
+            if (boardString[8*y+7-x] == '1')
                 std::cout << "1 ";
             else
                 std::cout << ". ";

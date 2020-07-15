@@ -2,7 +2,6 @@
 #define BITBOARD_H
 
 #include <string>
-#include <bitset>
 #include <types.h>
 
 namespace nnchesslib

@@ -13,3 +13,29 @@
  
  
  */
+
+#ifndef ATTACKS_H
+#define ATTACKS_H
+
+#include <bitboard.h>
+
+namespace nnchesslib
+{
+   namespace Attacks
+   {
+      extern U64 rookMasks[64];
+      extern U64 bishopMasks[64];
+
+      extern U64 nonSlidingAttacks[2][3][64];
+
+      void initAllAttacks();
+
+      void initRookMasks();
+      void initBishopMasks();
+
+      void initPawnAttacks();
+      void initKnightAttacks();
+      void initKingAttacks();
+   }
+}
+#endif
