@@ -33,6 +33,9 @@ namespace nnchesslib
             void setAll(bool val);
             void reset();
 
+            // Manipulate the board
+            U64 flipVertical();
+            
             // Debug
             void printDebug();
     };

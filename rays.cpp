@@ -64,6 +64,6 @@ inline U64 Rays::northWest(U64 bRay, int n)
 U64 Rays::getRay(Direction d, int index)
 {
     assert(0 <= d && d <= 7);
-    assert(0 <= index && index <= 63);
+    // assert(0 <= index && index <= 63);
     return rays[d][index];
 }

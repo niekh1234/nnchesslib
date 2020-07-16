@@ -148,16 +148,23 @@ void ChessBoard::generateBitBoards(std::string fen)
             bitIndex += 1;
         }
     }
-
-    std::bitset<64> _rooks = rooks.board;
-    std::bitset<64> _white_pieces = white_pieces.board;
-    std::bitset<64> combined = (_rooks & _white_pieces);
-    
-    std::cout<<_rooks<<std::endl;
-
+    // BAD BAD BAD BAD BAD BAD BAD BAD BAD BAD BAD BAD BAD
+    // cannot think of another way to do this yet.
+    // The problem is that the code above generates the board but mirrorred vertically.
+    knights = knights.flipVertical();
+    bishops = bishops.flipVertical();
+    rooks = rooks.flipVertical();
+    queens = queens.flipVertical();
+    kings = kings.flipVertical();
+    pawns = pawns.flipVertical();
 }
 
 //function for printing / combining all the bitboards to form a readable board. 
 void ChessBoard::print(){
 
+}
+
+BitBoard ChessBoard::getBlockers()
+{
+    return (rooks.board | knights.board | bishops.board | kings.board | queens.board | pawns.board);
 }

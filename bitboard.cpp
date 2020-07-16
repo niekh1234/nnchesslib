@@ -66,23 +66,20 @@ void BitBoard::reset()
 
 }
 
+U64 BitBoard::flipVertical()
+{
+    return __bswap_64(BitBoard::board);
+}
+
 void BitBoard::printDebug()
 {
-    // std::string boardString = getBoardString();
-    // std::cout<<"---------------"<<std::endl;
-    // for(int i = 0; i < boardString.size(); i++){
-    //     if(i % 8 == 0){
-    //         std::cout<<boardString.substr(i, 8)<<"\n";
-    //     }
-    // }
-    // std::cout<<"---------------"<<std::endl;
-    
     std::string boardString = getBoardString();
     std::cout<<"---------------"<<std::endl;
     for (int y = 0; y <= 7; y++)
     {
         for (int x = 0; x <= 7; x++)
         {
+            // if (boardString[63 - (8*y+x)] == '1')
             if (boardString[8*y+7-x] == '1')
                 std::cout << "1 ";
             else

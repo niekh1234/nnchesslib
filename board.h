@@ -58,6 +58,8 @@ class ChessBoard
         bool isValidFen(std::string fen);
         // Cout current instance of board. 
         void print();
+
+        BitBoard getBlockers();
 };
 
 #endif
