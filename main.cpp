@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     ChessBoard test(testFen);
     BitBoard lmaoxDDDD = test.getBlockers();
     lmaoxDDDD.printDebug();
-    BitBoard testBruh(Attacks::getRookAttacks(42, lmaoxDDDD.board));
+    BitBoard testBruh(Attacks::getBishopAttacks(43, lmaoxDDDD.board));
     testBruh.printDebug();
 
     return 0;

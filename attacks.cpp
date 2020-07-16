@@ -11,7 +11,7 @@ U64 Attacks::rookMasks[64];
 U64 Attacks::bishopMasks[64];
 
 U64 Attacks::rookTable[64][4096];
-// U64 Attacks::bishopMagics[64][4096];
+U64 Attacks::bishopTable[64][1024];
 
 U64 Attacks::nonSlidingAttacks[2][3][64];
 
@@ -22,6 +22,7 @@ void Attacks::initAllAttacks()
     initBishopMasks();
 
     initRookMagics();
+    initBishopMagics();
 
     //Init non sliding piece attacks
     initPawnAttacks();
@@ -34,7 +35,7 @@ U64 Attacks::genBlockers(int index, U64 mask)
     U64 blockerBoard = (U64)0;
 
     int8_t bitIndex = 0;
-    for(int i = 0; i < 64; i++)
+    for(int i = 0; i <= 63; i++)
     {
         if(mask & (U64)1 << i)
         {
@@ -56,7 +57,7 @@ void Attacks::initRookMasks()
     {
         rookMasks[i] =  Rays::getRay(NORTH, i) & ~rank_bb[RANK_8] |
                         Rays::getRay(SOUTH, i) & ~rank_bb[RANK_1] |
-                        Rays::getRay(WEST, i) & ~file_bb[FILE_H] |
+                        Rays::getRay(WEST, i) & ~file_bb[FILE_H]  |
                         Rays::getRay(EAST, i) & ~file_bb[FILE_A];
     }
 }
@@ -65,7 +66,7 @@ void Attacks::initBishopMasks()
 {
     for (int i = 0; i <= 63; i++)
     {
-        bishopMasks[i] =    (Rays::getRay(NORTH_EAST, i) | Rays::getRay(NORTH_WEST, i) |
+        bishopMasks[i] =   (Rays::getRay(NORTH_EAST, i) | Rays::getRay(NORTH_WEST, i)  |
                             Rays::getRay(SOUTH_EAST, i) | Rays::getRay(SOUTH_WEST, i)) &
                             ~(file_bb[FILE_A] | file_bb[FILE_H] | rank_bb[RANK_1] | rank_bb[RANK_8]);
     }
@@ -73,13 +74,26 @@ void Attacks::initBishopMasks()
 
 void Attacks::initRookMagics()
 {
-    for(int sq = 0; sq < 64; sq++)
+    for(int sq = 0; sq <= 63; sq++)
     {
         for(int i = 0; i < (1 << countBits(Attacks::rookMasks[sq])); i++)
         {
             U64 blockers = Attacks::genBlockers(i, Attacks::rookMasks[sq]);
 
             Attacks::rookTable[sq][(blockers * Attacks::rookMagics[sq]) >> (64 - countBits(Attacks::rookMasks[sq]))] = Attacks::getRookAttacksRays(sq, blockers);
+        }
+    }
+}
+
+void Attacks::initBishopMagics()
+{
+    for(int sq = 0; sq <= 63; sq++)
+    {
+        for(int i = 0; i < (1 << countBits(Attacks::bishopMasks[sq])); i++)
+        {
+            U64 blockers = Attacks::genBlockers(i, Attacks::bishopMasks[sq]);
+
+            Attacks::bishopTable[sq][(blockers * Attacks::bishopMagics[sq]) >> (64 - countBits(Attacks::bishopMasks[sq]))] = Attacks::getBishopAttacksRays(sq, blockers);
         }
     }
 }
@@ -131,14 +145,66 @@ U64 Attacks::getRookAttacksRays(int sq, U64 blockers)
     return combinedAttacks;
 }
 
+U64 Attacks::getBishopAttacksRays(int sq, U64 blockers)
+{
+    U64 combinedAttacks = (U64)0;
+
+    // north west attacks
+    U64 bishopAttacksNorthWest = Rays::getRay(NORTH_WEST, sq);
+    U64 northWestBlocker = bishopAttacksNorthWest & blockers;
+    if(blockers)
+    {
+        int index = bitScanForward(northWestBlocker);
+        bishopAttacksNorthWest ^= Rays::getRay(NORTH_WEST, index);
+    }
+    combinedAttacks |= bishopAttacksNorthWest;
+
+    // north east attacks
+    // this is different because above method did not work properly.
+    combinedAttacks |= Rays::getRay(NORTH_EAST, sq);
+    if (Rays::getRay(NORTH_EAST, sq) & blockers) {
+        combinedAttacks &= ~(Rays::getRay(NORTH_EAST, bitScanForward(Rays::getRay(NORTH_EAST, sq) & blockers)));
+    }
+
+    // south east attacks
+    U64 bishopAttacksSouthEast = Rays::getRay(SOUTH_EAST, sq);
+    U64 southEastBlocker = bishopAttacksSouthEast & blockers;
+    if(blockers)
+    {
+        int index = bitScanReverse(southEastBlocker);
+        bishopAttacksSouthEast ^= Rays::getRay(SOUTH_EAST, index);
+    }
+    combinedAttacks |= bishopAttacksSouthEast;
+
+    // south west attacks
+    U64 bishopAttacksSouthWest = Rays::getRay(SOUTH_WEST, sq);
+    U64 southWestBlocker = bishopAttacksSouthWest & blockers;
+    if(blockers)
+    {
+        int index = bitScanReverse(southWestBlocker);
+        bishopAttacksSouthWest ^= Rays::getRay(SOUTH_WEST, index);
+    }
+    combinedAttacks |= bishopAttacksSouthWest;
+
+    return combinedAttacks;
+}
+
 U64 Attacks::getRookAttacks(int sq, U64 blockers)
 {
     //blockers will be the entire board representation, so getting blockers in rook mask:
     blockers &= Attacks::rookMasks[sq];
-    // retrieving the index in which this specific blocker/square position is stored in the rooktable.
+    // retrieving the index in which this specific blocker/square position is stored in the rookTable.
     U64 index = (blockers * Attacks::rookMagics[sq]) >> (64 - countBits(Attacks::rookMasks[sq]));
-    std::cout<<index<<std::endl;
     return Attacks::rookTable[sq][index];
+}
+
+U64 Attacks::getBishopAttacks(int sq, U64 blockers)
+{
+    //blockers will be the entire board representation, so getting blockers in bishop mask:
+    blockers &= Attacks::bishopMasks[sq];
+    //retrieving the index in which this specific blocker/square position is stored in the bishopTable.
+    U64 index = (blockers * Attacks::bishopMagics[sq]) >> (64 - countBits(Attacks::bishopMasks[sq]));
+    return Attacks::bishopTable[sq][index];
 }
 
 void Attacks::initPawnAttacks()
