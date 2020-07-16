@@ -29,7 +29,7 @@ namespace nnchesslib
       extern U64 rookTable[64][4096];
       extern U64 bishopTable[64][1024];
 
-      extern U64 nonSlidingAttacks[2][3][64];
+      extern U64 nonSlidingAttacks[2][6][64];
 
       const U64 rookMagics[64] = {
          0x0080001020400080, 0x0040001000200040, 0x0080081000200080, 0x0080040800100080,
@@ -88,6 +88,9 @@ namespace nnchesslib
       void initPawnAttacks();
       void initKnightAttacks();
       void initKingAttacks();
+
+      U64 getNonSlidingAttacks(int sq, Color c, PieceType p);
+      U64 getSlidingAttacks(int sq, PieceType p, U64 blockers);
    }
 }
 #endif

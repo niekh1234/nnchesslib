@@ -32,9 +32,13 @@ int main(int argc, char *argv[])
     // frick.printDebug();
     ChessBoard test(testFen);
     BitBoard lmaoxDDDD = test.getBlockers();
+    std::cout<<"Board:"<<std::endl;
     lmaoxDDDD.printDebug();
-    BitBoard testBruh(Attacks::getBishopAttacks(43, lmaoxDDDD.board));
+    BitBoard testBruh(Attacks::getRookAttacks(43, lmaoxDDDD.board));
     testBruh.printDebug();
+
+    BitBoard frick(file_bb[FILE_A]);
+    frick.printDebug();
 
     return 0;
 }

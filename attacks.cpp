@@ -4,6 +4,7 @@
 #include <types.h>
 #include <utils.h>
 #include <iostream>
+#include <cassert>
 
 using namespace nnchesslib;
 
@@ -13,7 +14,7 @@ U64 Attacks::bishopMasks[64];
 U64 Attacks::rookTable[64][4096];
 U64 Attacks::bishopTable[64][1024];
 
-U64 Attacks::nonSlidingAttacks[2][3][64];
+U64 Attacks::nonSlidingAttacks[2][6][64];
 
 void Attacks::initAllAttacks()
 {
@@ -34,12 +35,12 @@ U64 Attacks::genBlockers(int index, U64 mask)
 {
     U64 blockerBoard = (U64)0;
 
-    int8_t bitIndex = 0;
+    int bitIndex = 0;
     for(int i = 0; i <= 63; i++)
     {
         if(mask & (U64)1 << i)
         {
-            if(index & (1<<bitIndex))
+            if(index & (1 << bitIndex))
             {
                 blockerBoard |= ((U64)1 << i);
             }
@@ -57,8 +58,8 @@ void Attacks::initRookMasks()
     {
         rookMasks[i] =  Rays::getRay(NORTH, i) & ~rank_bb[RANK_8] |
                         Rays::getRay(SOUTH, i) & ~rank_bb[RANK_1] |
-                        Rays::getRay(WEST, i) & ~file_bb[FILE_H]  |
-                        Rays::getRay(EAST, i) & ~file_bb[FILE_A];
+                        Rays::getRay(WEST, i) & ~file_bb[FILE_A]  |
+                        Rays::getRay(EAST, i) & ~file_bb[FILE_H];
     }
 }
 
@@ -68,7 +69,7 @@ void Attacks::initBishopMasks()
     {
         bishopMasks[i] =   (Rays::getRay(NORTH_EAST, i) | Rays::getRay(NORTH_WEST, i)  |
                             Rays::getRay(SOUTH_EAST, i) | Rays::getRay(SOUTH_WEST, i)) &
-                            ~(file_bb[FILE_A] | file_bb[FILE_H] | rank_bb[RANK_1] | rank_bb[RANK_8]);
+                            ~(file_bb[FILE_H] | file_bb[FILE_A] | rank_bb[RANK_1] | rank_bb[RANK_8]);
     }
 }
 
@@ -213,8 +214,8 @@ void Attacks::initPawnAttacks()
     {
         U64 pos = (U64)1 << i;
 
-        U64 wpAttacks = ((pos << 9) & ~file_bb[FILE_H]) | ((pos << 7) & ~file_bb[FILE_A]);  //White pawn attacks, checking for no wraparound
-        U64 bpAttacks = ((pos >> 7) & ~file_bb[FILE_H]) | ((pos >> 9) & ~file_bb[FILE_A]);  //Black pawn attacks, checking for no wraparound
+        U64 wpAttacks = ((pos << 9) & ~file_bb[FILE_A]) | ((pos << 7) & ~file_bb[FILE_H]);  //White pawn attacks, checking for no wraparound
+        U64 bpAttacks = ((pos >> 7) & ~file_bb[FILE_A]) | ((pos >> 9) & ~file_bb[FILE_H]);  //Black pawn attacks, checking for no wraparound
 
         nonSlidingAttacks[WHITE][PAWN][i] = wpAttacks;
         nonSlidingAttacks[BLACK][PAWN][i] = bpAttacks;
@@ -227,10 +228,10 @@ void Attacks::initKnightAttacks()
     {
         U64 pos = (U64)1 << i;
 
-        U64 kAttacks =  (((pos >> 6) | (pos << 10)) & ~(file_bb[FILE_G] | file_bb[FILE_H])) |   //Knight moves two to the left
-                        (((pos << 6) | (pos >> 10)) & ~(file_bb[FILE_A] | file_bb[FILE_B])) |   //Knight moves two to the right
-                        (((pos >> 15) | (pos << 17)) & ~(file_bb[FILE_H])) |                    //Knight moves one to the left
-                        (((pos << 15) | (pos >> 17)) & ~(file_bb[FILE_A]));                     //Knight moves one to the right
+        U64 kAttacks =  (((pos >> 6) | (pos << 10)) & ~(file_bb[FILE_B] | file_bb[FILE_A])) |   //Knight moves two to the left
+                        (((pos << 6) | (pos >> 10)) & ~(file_bb[FILE_H] | file_bb[FILE_G])) |   //Knight moves two to the right
+                        (((pos >> 15) | (pos << 17)) & ~(file_bb[FILE_A])) |                    //Knight moves one to the left
+                        (((pos << 15) | (pos >> 17)) & ~(file_bb[FILE_H]));                     //Knight moves one to the right
 
         nonSlidingAttacks[WHITE][KNIGHT][i] = kAttacks;
         nonSlidingAttacks[BLACK][KNIGHT][i] = kAttacks;
@@ -243,12 +244,38 @@ void Attacks::initKingAttacks()
     {
         U64 pos = (U64)1 << i;
 
-        U64 kAttacks =  ((pos << 7) | (pos >> 1) | (pos >> 9)) & ~file_bb[FILE_A] | //King moves to the right
-                        ((pos >> 7) | (pos << 1) | (pos << 9)) & ~file_bb[FILE_H] | //King moves to the left
+        U64 kAttacks =  ((pos << 7) | (pos >> 1) | (pos >> 9)) & ~file_bb[FILE_H] | //King moves to the right
+                        ((pos >> 7) | (pos << 1) | (pos << 9)) & ~file_bb[FILE_A] | //King moves to the left
                         ((pos >> 8) | (pos << 8));                                  //King moves up and down | easy, no bounds checking :^)
 
         nonSlidingAttacks[WHITE][KING][i] = kAttacks;
         nonSlidingAttacks[BLACK][KING][i] = kAttacks;
+    }
+}
+
+U64 Attacks::getNonSlidingAttacks(int sq, Color c, PieceType p)
+{
+    assert(p == 0 || p == 1 || p == 5);
+    return nonSlidingAttacks[c][p][sq];
+}
+
+U64 Attacks::getSlidingAttacks(int sq, PieceType p, U64 blockers)
+{
+    assert(p == 2 || p == 3 || p == 4);
+    switch(p)
+    {
+        case BISHOP:
+            return getBishopAttacks(sq, blockers);
+            break;
+        case ROOK:
+            return getRookAttacks(sq, blockers);
+            break;
+        case QUEEN:
+            return (getRookAttacks(sq, blockers) | getBishopAttacks(sq, blockers));
+            break;
+        default:
+            return (U64)0;
+            break;
     }
 }
 

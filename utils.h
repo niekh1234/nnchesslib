@@ -5,6 +5,7 @@
 
 using namespace nnchesslib;
 
+// counts 1's in a U64
 int countBits(U64 n)
 {
     int output = 0;

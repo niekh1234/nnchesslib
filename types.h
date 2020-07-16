@@ -17,7 +17,7 @@ namespace nnchesslib
 
     enum PieceType
     {
-        PAWN, KNIGHT, KING, BISHOP, ROOK, QUEEN,
+        PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING,
         TYPE_UD = 8
     };
 
@@ -42,10 +42,10 @@ namespace nnchesslib
     };
 
 
-    constexpr U64 file_bb[8] = {  0x0101010101010101ULL << 7, 0x0101010101010101ULL << 6,
-                        0x0101010101010101ULL << 5, 0x0101010101010101ULL << 4,
-                        0x0101010101010101ULL << 3, 0x0101010101010101ULL << 2,
-                        0x0101010101010101ULL << 1, 0x0101010101010101ULL};
+    constexpr U64 file_bb[8] = {  0x0101010101010101ULL, 0x0101010101010101ULL << 1,
+                        0x0101010101010101ULL << 2, 0x0101010101010101ULL << 3,
+                        0x0101010101010101ULL << 4, 0x0101010101010101ULL << 5,
+                        0x0101010101010101ULL << 6, 0x0101010101010101ULL << 7};
 
     enum File
     {
