@@ -29,6 +29,9 @@ namespace nnchesslib
             void genWhiteSinglePawnMoves(BitBoard blockers);
             void genWhiteDoublePawnMoves(BitBoard blockers);
 
+            void genWhitePawnCaptures(BitBoard blockers);
+            void genBlackPawnCaptures(BitBoard blockers);
+
             int popLsb(U64 &board);
     };
 }

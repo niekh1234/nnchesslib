@@ -207,6 +207,14 @@ BitBoard ChessBoard::getBoard(Color color, PieceType piece)
     }
 }
 
+BitBoard ChessBoard::getBoard(Color color)
+{
+    assert(color == WHITE || color == BLACK);
+
+    if(color == WHITE) return (whitePieces.board);
+    return (blackPieces.board);
+}
+
 BitBoard ChessBoard::getBlockers()
 {
     return (whitePieces.board | blackPieces.board);

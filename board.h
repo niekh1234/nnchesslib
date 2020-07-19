@@ -61,6 +61,7 @@ class ChessBoard
         void print();
 
         BitBoard getBoard(Color color, PieceType piece);
+        BitBoard getBoard(Color color);
         BitBoard getBlockers();
 
         bool getWhiteToMove();

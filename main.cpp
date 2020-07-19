@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
     // BitBoard frick = Attacks::nonSlidingAttacks[WHITE][PAWN][31];
     // frick.printDebug();
-    ChessBoard test(testFen);
+    ChessBoard test("r3k2r/pppqp1bp/2n1pn2/3P2p1/7P/1PN1PN2/5PP1/R1BQ1K1R b kq - 0 12");
     MoveGen lmao = MoveGen(test);
     lmao.genLegalMoves();
 
