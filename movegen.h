@@ -28,9 +28,11 @@ namespace nnchesslib
             // pawns only move in one direction so seperate functions for white and black are needed.
             void genWhiteSinglePawnMoves(BitBoard blockers);
             void genWhiteDoublePawnMoves(BitBoard blockers);
-
             void genWhitePawnCaptures(BitBoard blockers);
-            void genBlackPawnCaptures(BitBoard blockers);
+            
+            void genNonSlidingMoves(Color color, PieceType piece);
+            void genSlidingMoves(Color color, PieceType piece, BitBoard blockers);
+            void genKingMoves(Color color, BitBoard blockers);
 
             int popLsb(U64 &board);
     };

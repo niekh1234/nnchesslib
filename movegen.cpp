@@ -35,6 +35,11 @@ void MoveGen::genWhiteMoves(BitBoard blockers)
     genWhiteSinglePawnMoves(blockers);
     genWhiteDoublePawnMoves(blockers);
     genWhitePawnCaptures(blockers);
+    genNonSlidingMoves(WHITE, KNIGHT);
+    genNonSlidingMoves(WHITE, KING);
+    genSlidingMoves(WHITE, ROOK, blockers);
+    genSlidingMoves(WHITE, BISHOP, blockers);
+    genSlidingMoves(WHITE, QUEEN, blockers);
 }
 
 void MoveGen::genBlackMoves(BitBoard blockers)
@@ -100,7 +105,7 @@ void MoveGen::genWhitePawnCaptures(BitBoard blockers)
         // getting the index of a specific pawn and removing it from the board.
         int index = popLsb(pawns.board);
         // getting attacks and comparing to black pieces.
-        BitBoard pawnAttacks = Attacks::nonSlidingAttacks[WHITE][PAWN][index] & black.board;
+        BitBoard pawnAttacks = Attacks::getNonSlidingAttacks(index, WHITE, PAWN) & black.board;
         if(pawnAttacks.board){
             // getting the amount of pieces a pawn is attacking.
             int attackCount = __builtin_popcountll(pawnAttacks.board);
@@ -119,7 +124,64 @@ void MoveGen::genWhitePawnCaptures(BitBoard blockers)
     }
 }
 
+void MoveGen::genNonSlidingMoves(Color color, PieceType piece)
+{
+    // getting target pieces on the board for a specific color.
+    BitBoard targets = board.getBoard(color, piece);
 
+    int count = __builtin_popcountll(targets.board);
+
+    for(int _ = 0; _ < count; _++)
+    {
+        int index = popLsb(targets.board);
+
+        BitBoard targetMoves = Attacks::getNonSlidingAttacks(index, color, piece);
+        BitBoard targetAttacks = targetMoves.board & ~board.getBoard(color).board;
+
+        int attackCount = __builtin_popcountll(targetMoves.board);
+
+        targetAttacks.printDebug();
+
+        for(int num = 0; num < attackCount; num++)
+        {
+            // getting the index of a square that our piece can move to/capture.
+            int attackIndex = popLsb(targetAttacks.board);
+            // generating a move with our piece index and the potential square it can move to. 
+            Move::Move move = Move::createMove(index, attackIndex);
+            pseudoLegalMoves.push_back(move);
+        }
+    }    
+}
+
+void MoveGen::genSlidingMoves(Color color, PieceType piece, BitBoard blockers)
+{
+    // getting target pieces on the board for a specific color.
+    BitBoard targets = board.getBoard(color, piece);
+
+    int count = __builtin_popcountll(targets.board);
+
+    for(int _ = 0; _ < count; _++)
+    {
+        int index = popLsb(targets.board);
+
+        BitBoard targetMoves = Attacks::getSlidingAttacks(index, piece, blockers.board);
+        BitBoard targetAttacks = targetMoves.board & ~board.getBoard(color).board;
+
+        int attackCount = __builtin_popcountll(targetMoves.board);
+
+        for(int num = 0; num < attackCount; num++)
+        {
+            // getting the index of a square that our piece can move to/capture.
+            int attackIndex = popLsb(targetAttacks.board);
+            // generating a move with our piece index and the potential square it can move to. 
+            Move::Move move = Move::createMove(index, attackIndex);
+            pseudoLegalMoves.push_back(move);
+        }
+    }
+    // todo!
+    // if rook check for castle!
+    // 
+}
 
 int MoveGen::popLsb(U64 &board)
 {
