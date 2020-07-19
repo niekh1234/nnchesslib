@@ -13,6 +13,7 @@
 #define BOARD_H
 
 #include <bitboard.h>
+#include <Move.h>
 #include <iostream>
 
 #pragma once
@@ -53,6 +54,16 @@ class ChessBoard
         // Generate bitboards corresponding to a given fen.
         void generateBitBoards(std::string fen);
     public:
+        bool whiteCastleShort;
+        bool whiteCastleLong;
+        bool blackCastleShort;
+        bool blackCastleLong;   
+        int fiftyMoveRule;
+        int plyCount;
+        int repetition;
+
+        BoardInfo* previousBoard;
+
         ChessBoard();
         ChessBoard(std::string fenRepresentation);
         // Determine whether a fen is valid.
@@ -65,6 +76,8 @@ class ChessBoard
         BitBoard getBlockers();
 
         bool getWhiteToMove();
+
+        void pushMove(Move::Move move);
 };
 
 #endif

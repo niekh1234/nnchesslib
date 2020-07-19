@@ -69,6 +69,26 @@ bool ChessBoard::isValidFen(std::string fen)
         && castleRights != "Q" && castleRights != "Qk" && castleRights != "Qq"
         && castleRights != "Qkq")
         return false;
+    
+    // setting the castling rights bools
+    for (auto c : castleRights)
+    {
+        switch(c)
+        {
+            case 'K':
+                whiteCastleShort = true;
+                break;
+            case 'Q':
+                whiteCastleLong = true;
+                break;
+            case 'k':
+                blackCastleShort = true;
+                break;
+            case 'q':
+                blackCastleLong = true;
+                break;
+        }
+    }
 
     // Check valid en passant
     if (enpassant != "-") {
@@ -171,8 +191,42 @@ void ChessBoard::generateBitBoards(std::string fen)
 }
 
 //function for printing / combining all the bitboards to form a readable board. 
-void ChessBoard::print(){
+void ChessBoard::print()
+{
+    std::string output;
+    std::string final;
 
+    BitBoard occupied = whitePieces.board | blackPieces.board;
+    for(int i = 0; i <= 63; i++)
+    {
+        if(occupied.get(i))
+        {
+            if(BitBoard(pawns.board & whitePieces.board).get(i)) output+=" P ";
+            if(BitBoard(knights.board & whitePieces.board).get(i)) output+=" N ";
+            if(BitBoard(bishops.board & whitePieces.board).get(i)) output+=" B ";
+            if(BitBoard(rooks.board & whitePieces.board).get(i)) output+=" R ";
+            if(BitBoard(queens.board & whitePieces.board).get(i)) output+=" Q ";
+            if(BitBoard(kings.board & whitePieces.board).get(i)) output+=" K ";
+            if(BitBoard(pawns.board & blackPieces.board).get(i)) output+=" p ";
+            if(BitBoard(knights.board & blackPieces.board).get(i)) output+=" n ";
+            if(BitBoard(bishops.board & blackPieces.board).get(i)) output+=" b ";
+            if(BitBoard(rooks.board & blackPieces.board).get(i)) output+=" r ";
+            if(BitBoard(queens.board & blackPieces.board).get(i)) output+=" q ";
+            if(BitBoard(kings.board & blackPieces.board).get(i)) output+=" k ";
+        } 
+        else
+        {
+            output+=" . ";
+        }
+        if((i + 1) % 8 == 0){
+            final.insert(0, output + "\n");
+            output = "";
+        }
+    }
+    
+    final.insert(0, " -  -  -  -  -  -  -  - \n");
+    final+=" -  -  -  -  -  -  -  - ";
+    std::cout<<final<<std::endl;
 }
 
 BitBoard ChessBoard::getBoard(Color color, PieceType piece)
@@ -223,4 +277,13 @@ BitBoard ChessBoard::getBlockers()
 bool ChessBoard::getWhiteToMove()
 {
     return whiteToMove;
+}
+
+void ChessBoard::pushMove(Move::Move move)
+{
+    int from = Move::from_Square(move);
+    int to = Move::to_Square(move);
+
+    std::cout<<from<<std::endl;
+    std::cout<<to<<std::endl;
 }
