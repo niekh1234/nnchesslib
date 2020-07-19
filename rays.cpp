@@ -72,8 +72,9 @@ inline U64 Rays::northWest(U64 bRay, int n)
 // Returns Rays from memory from a given direction and index.
 U64 Rays::getRay(Direction d, int index)
 {
+    std::cout<<index<<std::endl;
     assert(0 <= d && d <= 7);
-    assert(0 <= index && index <= 63);
+    assert(-1 <= index && index <= 63);
     
     return rays[d][index];
 }
