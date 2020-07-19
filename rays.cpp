@@ -1,23 +1,30 @@
-#include <cassert>
+// Rays.cpp | Calculates rays for slow piece attack generation.
+
 #include <types.h>
 #include <bitboard.h>
 #include <rays.h>
+
+#include <cassert>
 #include <iostream>
 
 using namespace nnchesslib;
 
+// All Rays stored in memory.
 U64 Rays::rays[8][64];
 
+// Converts a square into a file.
 int Rays::file(int sq)
 {
     return(sq % 8);
 }
 
+// Converts a square into a rank.
 int Rays::rank(int sq)
 {
     return(sq / 8);
 }
 
+// Function for calculating all Rays to be stored in memory.
 void Rays::initRays()
 {
     for(int sq = 0; sq < 64; sq++)
@@ -40,6 +47,7 @@ void Rays::initRays()
     }
 }
 
+// Shifts a diagonal north-east ray without having bits wrap around.
 inline U64 Rays::northEast(U64 bRay, int n)
 {
     U64 ray = bRay;
@@ -50,6 +58,7 @@ inline U64 Rays::northEast(U64 bRay, int n)
     return ray;
 }
 
+// Shifts a diagonal north-west ray without having bits wrap around.
 inline U64 Rays::northWest(U64 bRay, int n)
 {
     U64 ray = bRay;
@@ -60,10 +69,11 @@ inline U64 Rays::northWest(U64 bRay, int n)
     return ray;
 }
 
-
+// Returns Rays from memory from a given direction and index.
 U64 Rays::getRay(Direction d, int index)
 {
     assert(0 <= d && d <= 7);
-    // assert(0 <= index && index <= 63);
+    assert(0 <= index && index <= 63);
+    
     return rays[d][index];
 }

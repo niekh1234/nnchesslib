@@ -1,3 +1,6 @@
+#ifndef RAYS_H
+#define RAYS_H
+
 #include <bitboard.h>
 
 namespace nnchesslib
@@ -17,3 +20,5 @@ namespace nnchesslib
         U64 northWest(U64 bRay, int n);
     }
 }
+
+#endif
