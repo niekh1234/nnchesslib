@@ -4,6 +4,8 @@
 #include <rays.h>
 #include <time.h>
 #include <attacks.h>
+#include <movegen.h>
+#include <bitset>
 
 using namespace nnchesslib;
 
@@ -26,19 +28,13 @@ int main(int argc, char *argv[])
 {
     initAll();
 
-    const std::string testFen = "r4rk1/ppp1npbp/6p1/q3p3/N3P3/PnP4Q/1P3PPP/R1BR2K1 w - - 0 17";
+    const std::string testFen = "1r2r1k1/pp6/3K4/4p1pp/4P3/5P2/6PP/1R6 b - - 1 34";
 
     // BitBoard frick = Attacks::nonSlidingAttacks[WHITE][PAWN][31];
     // frick.printDebug();
     ChessBoard test(testFen);
-    BitBoard lmaoxDDDD = test.getBlockers();
-    std::cout<<"Board:"<<std::endl;
-    lmaoxDDDD.printDebug();
-    BitBoard testBruh(Attacks::getRookAttacks(43, lmaoxDDDD.board));
-    testBruh.printDebug();
-
-    BitBoard frick(file_bb[FILE_A]);
-    frick.printDebug();
+    MoveGen lmao = MoveGen(test);
+    lmao.genLegalMoves();
 
     return 0;
 }

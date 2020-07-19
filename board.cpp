@@ -11,6 +11,11 @@
 using namespace nnchesslib;
 
 // Constructors
+ChessBoard::ChessBoard()
+{
+    generateBitBoards(STARTING_FEN);
+}
+
 ChessBoard::ChessBoard(std::string fen)
 {
     std::string valid_fen;
@@ -111,6 +116,8 @@ bool ChessBoard::isValidFen(std::string fen)
     return true;
 }
 
+// this entire function works but needs to be revised.
+// it works but it does not work logically.
 void ChessBoard::generateBitBoards(std::string fen)
 {
     assert(isValidFen(fen));
@@ -134,8 +141,9 @@ void ChessBoard::generateBitBoards(std::string fen)
         else if (isalpha(board[i]))
         {
             // Generate bitboard for white and black
-            if (board[i] >= 'A' && board[i] <= 'Z') white_pieces.set(bitIndex, true);
-            if (board[i] >= 'a' && board[i] <= 'z') black_pieces.set(bitIndex, true);
+            // this is reversed atm.
+            if (board[i] >= 'A' && board[i] <= 'Z') whitePieces.set(bitIndex, true);
+            if (board[i] >= 'a' && board[i] <= 'z') blackPieces.set(bitIndex, true);
 
             // Generate bitboard for pieces
             if (board[i] == 'N' || board[i] == 'n') knights.set(bitIndex, true);
@@ -148,7 +156,6 @@ void ChessBoard::generateBitBoards(std::string fen)
             bitIndex += 1;
         }
     }
-    // BAD BAD BAD BAD BAD BAD BAD BAD BAD BAD BAD BAD BAD
     // cannot think of another way to do this yet.
     // The problem is that the code above generates the board but mirrorred vertically.
     knights = knights.flipVertical();
@@ -157,6 +164,10 @@ void ChessBoard::generateBitBoards(std::string fen)
     queens = queens.flipVertical();
     kings = kings.flipVertical();
     pawns = pawns.flipVertical();
+    whitePieces = whitePieces.flipVertical();
+    blackPieces = blackPieces.flipVertical();
+
+
 }
 
 //function for printing / combining all the bitboards to form a readable board. 
@@ -164,7 +175,44 @@ void ChessBoard::print(){
 
 }
 
+BitBoard ChessBoard::getBoard(Color color, PieceType piece)
+{
+    assert(color == WHITE || color == BLACK);
+
+    U64 boardColor = whitePieces.board;
+    if(color == BLACK) boardColor = blackPieces.board;
+
+    switch(piece){
+        case PAWN:
+            return (boardColor & pawns.board);
+            break;
+        case KNIGHT:
+            return (boardColor & knights.board);
+            break;
+        case BISHOP:
+            return (boardColor & bishops.board);
+            break;
+        case ROOK:
+            return (boardColor & rooks.board);
+            break;
+        case QUEEN:
+            return (boardColor & queens.board);
+            break;
+        case KING:
+            return (boardColor & kings.board);
+            break;
+        default:
+            return (whitePieces.board & pawns.board);
+            break;
+    }
+}
+
 BitBoard ChessBoard::getBlockers()
 {
-    return (rooks.board | knights.board | bishops.board | kings.board | queens.board | pawns.board);
+    return (whitePieces.board | blackPieces.board);
+}
+
+bool ChessBoard::getWhiteToMove()
+{
+    return whiteToMove;
 }

@@ -9,14 +9,11 @@ namespace nnchesslib
     class BitBoard
     {
         public:
-
             //Attributes
             U64 board;
             //Constructors
             BitBoard();
             BitBoard(U64 value);
-
-            // BitBoard();
 
             //IO
             std::string getBoardString();

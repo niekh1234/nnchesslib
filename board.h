@@ -39,8 +39,8 @@ struct BoardInfo
 class ChessBoard
 {
     private:
-        BitBoard white_pieces;
-        BitBoard black_pieces;
+        BitBoard whitePieces;
+        BitBoard blackPieces;
         BitBoard pawns;
         BitBoard knights;
         BitBoard bishops;
@@ -48,18 +48,22 @@ class ChessBoard
         BitBoard queens;
         BitBoard kings;
 
-        bool whiteToMove;
+        bool whiteToMove = true;
 
         // Generate bitboards corresponding to a given fen.
         void generateBitBoards(std::string fen);
     public:
+        ChessBoard();
         ChessBoard(std::string fenRepresentation);
         // Determine whether a fen is valid.
         bool isValidFen(std::string fen);
         // Cout current instance of board. 
         void print();
 
+        BitBoard getBoard(Color color, PieceType piece);
         BitBoard getBlockers();
+
+        bool getWhiteToMove();
 };
 
 #endif

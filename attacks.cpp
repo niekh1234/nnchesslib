@@ -1,10 +1,9 @@
-#include <bitboard.h>
 #include <attacks.h>
 #include <rays.h>
 #include <types.h>
-#include <utils.h>
 #include <iostream>
 #include <cassert>
+#include <utils.h>
 
 using namespace nnchesslib;
 
