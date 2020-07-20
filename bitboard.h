@@ -20,7 +20,7 @@ namespace nnchesslib
 
             //Interact with individual points
             void set(int square, bool set);
-            int get(int x, int y);
+            int get(int square);
 
             //Interact with lines
             void setFile(int y);

@@ -7,35 +7,26 @@
 
 namespace nnchesslib
 {
-    typedef std::vector<Move::Move> MoveList;
+    typedef std::vector<Move> MoveList;
 
-    class MoveGen
-    {
-        public:
-            ChessBoard board;
-            MoveGen(ChessBoard board);
-            // move generation
-            MoveList legalMoves;
-            MoveList pseudoLegalMoves;
+    void genLegalMoves(ChessBoard cboard, MoveList& moveList);
+    void genPseudoLegalMoves(ChessBoard cboard, MoveList& moveList);
 
-            MoveList genLegalMoves();
-            MoveList genPseudoLegalMoves(ChessBoard board);
+    void testXDD();
 
-        private:
-            void genWhiteMoves(BitBoard blockers);
-            void genBlackMoves(BitBoard blockers);
+    void genWhiteMoves(ChessBoard cboard, MoveList& moveList, BitBoard blockers);
+    void genBlackMoves(ChessBoard cboard, MoveList& moveList, BitBoard blockers);
 
-            // pawns only move in one direction so seperate functions for white and black are needed.
-            void genWhiteSinglePawnMoves(BitBoard blockers);
-            void genWhiteDoublePawnMoves(BitBoard blockers);
-            void genWhitePawnCaptures(BitBoard blockers);
-            
-            void genNonSlidingMoves(Color color, PieceType piece);
-            void genSlidingMoves(Color color, PieceType piece, BitBoard blockers);
-            void genKingMoves(Color color, BitBoard blockers);
+    // pawns only move in one direction so seperate functions for white and black are needed.
+    void genWhiteSinglePawnMoves(ChessBoard cboard, MoveList& moveList, BitBoard blockers);
+    void genWhiteDoublePawnMoves(ChessBoard cboard, MoveList& moveList, BitBoard blockers);
+    void genWhitePawnCaptures(ChessBoard cboard, MoveList& moveList, BitBoard blockers);
 
-            int popLsb(U64 &board);
-    };
+    void genNonSlidingMoves(ChessBoard cboard, MoveList& moveList, Color color, PieceType piece);
+    void genSlidingMoves(ChessBoard cboard, MoveList& moveList, Color color, PieceType piece, BitBoard blockers);
+    void genKingMoves(ChessBoard cboard, MoveList& moveList, Color color, BitBoard blockers);
+
+    int popLsb(U64 &board);
 }
 
 #endif

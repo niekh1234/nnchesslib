@@ -7,6 +7,7 @@
 #include <cassert>
 #include <algorithm>
 #include <types.h>
+#include <move.h>
 
 using namespace nnchesslib;
 
@@ -186,15 +187,13 @@ void ChessBoard::generateBitBoards(std::string fen)
     pawns = pawns.flipVertical();
     whitePieces = whitePieces.flipVertical();
     blackPieces = blackPieces.flipVertical();
-
-
 }
 
 //function for printing / combining all the bitboards to form a readable board. 
 void ChessBoard::print()
 {
     std::string output;
-    std::string final;
+    std::string finalOutput;
 
     BitBoard occupied = whitePieces.board | blackPieces.board;
     for(int i = 0; i <= 63; i++)
@@ -219,14 +218,14 @@ void ChessBoard::print()
             output+=" . ";
         }
         if((i + 1) % 8 == 0){
-            final.insert(0, output + "\n");
+            finalOutput.insert(0, output + "\n");
             output = "";
         }
     }
-    
-    final.insert(0, " -  -  -  -  -  -  -  - \n");
-    final+=" -  -  -  -  -  -  -  - ";
-    std::cout<<final<<std::endl;
+
+    finalOutput.insert(0, " -  -  -  -  -  -  -  - \n");
+    finalOutput+=" -  -  -  -  -  -  -  - ";
+    std::cout<<finalOutput<<std::endl;
 }
 
 BitBoard ChessBoard::getBoard(Color color, PieceType piece)
@@ -279,11 +278,53 @@ bool ChessBoard::getWhiteToMove()
     return whiteToMove;
 }
 
-void ChessBoard::pushMove(Move::Move move)
+BitBoard * ChessBoard::getPieceOnSquare(int index)
 {
-    int from = Move::from_Square(move);
-    int to = Move::to_Square(move);
-
-    std::cout<<from<<std::endl;
-    std::cout<<to<<std::endl;
+    if(pawns.get(index)) return(&pawns);
+    if(knights.get(index)) return(&knights);
+    if(bishops.get(index)) return(&bishops);
+    if(rooks.get(index)) return(&rooks);
+    if(queens.get(index)) return(&queens);
+    if(kings.get(index)) return(&kings);
+    return 0;
 }
+
+BitBoard * ChessBoard::getColorOnSquare(int index)
+{
+    if(whitePieces.get(index)) return(&whitePieces);
+    if(blackPieces.get(index)) return(&blackPieces);
+    return 0;
+}
+
+void ChessBoard::pushMove(Move move)
+{
+    // so yea this mostly works but it does not look at the color.
+    int from = from_Square(move);
+    int to = to_Square(move);
+    // gets the bitboard corresponding to our piecetype, e.g. knights, pawns etc.
+    BitBoard * ourPieceType;
+    ourPieceType = getPieceOnSquare(from);
+    // gets the bitboard corresponding to the opponent piecetype (at least if it is a capture).
+    BitBoard * theirPieceType;
+    theirPieceType = getPieceOnSquare(to);
+    // if board is empty it returns 0.
+    bool isCapture = theirPieceType;
+
+    BitBoard * ourPieces;
+    ourPieces = getColorOnSquare(from);
+
+    if(isCapture)
+        theirPieceType->set(to, false);
+
+        BitBoard * theirPieces;
+        theirPieces = getColorOnSquare(to);
+        theirPieces->set(to, false);
+
+    // changing to the position of a piece on one of the piece boards: pawn, knight, rook king etc.
+    ourPieceType->set(from, false);
+    ourPieceType->set(to, true);
+    // changing the position of the piece on the white_pieces or black_pieces board.
+    ourPieces->set(from, false);
+    ourPieces->set(to, true);
+}
+

@@ -32,12 +32,11 @@ void BitBoard::set(int square, bool set)
         board &= ~((U64)1 << square);
 }
 
-int BitBoard::get(int x, int y)
+int BitBoard::get(int square)
 {
-    assert(0 <= x && x <= 7);
-    assert(0 <= y && y <= 7);
+    assert(0 <= square && square <= 63);
     
-    int val = (board >> (8*y+7-x)) & 1;
+    int val = (board >> square) & 1;
 
     return val;
 }
