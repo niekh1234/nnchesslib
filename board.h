@@ -21,10 +21,10 @@ namespace nnchesslib
     struct BoardInfo
     {
         // Copied from move
-        bool whiteCastleShort;
-        bool whiteCastleLong;
-        bool blackCastleShort;
-        bool blackCastleLong;
+        bool whiteCastleShort = false;
+        bool whiteCastleLong = false;
+        bool blackCastleShort = false;
+        bool blackCastleLong = false;
         
         int fiftyMoveRule;
         int plyCount;

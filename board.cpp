@@ -326,7 +326,6 @@ void ChessBoard::updateCastlingRights()
 
 void ChessBoard::pushMove(Move move)
 {
-    // so yea this mostly works but it does not look at the color.
     int from = from_Square(move);
     int to = to_Square(move);
     // gets the bitboard corresponding to our piecetype, e.g. knights, pawns etc.
@@ -355,6 +354,11 @@ void ChessBoard::pushMove(Move move)
     ourPieces->set(to, true);
 
     updateCastlingRights();
-    if(whiteCastleLong) std::cout<<"white can castle long\n";
+}
+
+// removes one move from the list.
+void ChessBoard::popMove()
+{
+
 }
 

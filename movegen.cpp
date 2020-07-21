@@ -260,7 +260,7 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
             std::cout<<"white qs\n";
         } 
         // white kingside:
-        if(board.whiteCastleLong && !blockers.get(F1) && !blockers.get(G1))
+        if(board.whiteCastleShort && !blockers.get(F1) && !blockers.get(G1))
         {
             Move move = createMove(E1, G1, CASTLING);
             moveList.push_back(move);
@@ -277,7 +277,7 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
             std::cout<<"black qs\n";
         } 
         // black kingside:
-        if(board.blackCastleLong && !blockers.get(F8) && !blockers.get(G8))
+        if(board.blackCastleShort && !blockers.get(F8) && !blockers.get(G8))
         {
             Move move = createMove(E8, G8, CASTLING);
             moveList.push_back(move);
