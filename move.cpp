@@ -5,7 +5,7 @@ using namespace nnchesslib;
 
 int nnchesslib::from_Square(Move m)
 {
-    return (m >> 6) & 0xFFF;
+    return (m >> 6) & 0x3f;
 }
 
 int nnchesslib::to_Square(Move m)

@@ -26,6 +26,8 @@ namespace nnchesslib
     void genSlidingMoves(ChessBoard cboard, MoveList& moveList, Color color, PieceType piece, BitBoard blockers);
     void genKingMoves(ChessBoard cboard, MoveList& moveList, Color color, BitBoard blockers);
 
+    void genPromotions(int pawnIndex, MoveList& moveList, Color color, BitBoard pawns);
+
     void genCastlingMoves(ChessBoard board, MoveList& moveList, Color color, BitBoard blockers);
 
     int popLsb(U64 &board);

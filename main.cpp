@@ -30,15 +30,12 @@ int main(int argc, char *argv[])
 
     const std::string testFen = "1r2r1k1/pp6/3K4/4p1pp/4P3/5P2/6PP/1R6 b - - 1 34";
 
-    ChessBoard test("r1b2rk1/pppp1pp1/2nb1q1p/1B2p3/4P3/2NP1N2/PPPQ1PPP/R3K2R b KQ - 1 8");
+    ChessBoard test("pppp1ppp/4P3/8/6P1/1k2P3/8/8/1K6 w - - 0 1");
+    test.print();
     MoveList testing;
     genPseudoLegalMoves(test, testing);
 
     for (Move m : testing)
         printMove(m);
-
-    Move testMove = createMove(C2, C4);
-    test.pushMove(testMove);
-    test.print();
     return 0;
 }
