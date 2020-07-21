@@ -359,7 +359,6 @@ void ChessBoard::updateCastlingRights()
         blackCastleLong = false;
         blackCastleShort = false;
     }
-
 }
 
 void ChessBoard::pushCastlingMove(Move move)
@@ -383,7 +382,7 @@ void ChessBoard::pushCastlingMove(Move move)
         ourPieces->set(F1, true);
     } 
     // white qs castle
-    else if (to == 0)
+    else if (to == 2)
     {
         kings.set(E1, false);
         rooks.set(A1, false);
@@ -394,7 +393,7 @@ void ChessBoard::pushCastlingMove(Move move)
         ourPieces->set(C1, true);
         ourPieces->set(D1, true);
     }
-    else if (to == 56)
+    else if (to == 58)
     {
         kings.set(E8, false);
         rooks.set(H8, false);
@@ -406,7 +405,7 @@ void ChessBoard::pushCastlingMove(Move move)
         ourPieces->set(F8, true);
     } 
     // black qs castle
-    else if (to == 63)
+    else if (to == 62)
     {
         kings.set(E8, false);
         rooks.set(A8, false);
@@ -426,7 +425,18 @@ void ChessBoard::pushPromotionMove(Move move)
     int from = from_Square(move);
     int to = to_Square(move);
 
-    std::cout<<(from, to)<<std::endl;
+    BitBoard * ourPieces = getColorOnSquare(from);
+
+    PieceType piece = movePromotionType(move);
+
+    pawns.set(from, false);
+    ourPieces->set(from, false);
+    ourPieces->set(to, true);
+
+    if(piece == QUEEN) queens.set(to, true);
+    if(piece == ROOK) rooks.set(to, true);
+    if(piece == BISHOP) bishops.set(to, true);
+    if(piece == KNIGHT) knights.set(to, true);
 }
 
 void ChessBoard::pushMove(Move move)

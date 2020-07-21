@@ -43,10 +43,10 @@ namespace nnchesslib
             // Generate bitboards corresponding to a given fen.
             void generateBitBoards(std::string fen);
         public:
-            bool whiteCastleShort;
-            bool whiteCastleLong;
-            bool blackCastleShort;
-            bool blackCastleLong;   
+            bool whiteCastleShort = false;
+            bool whiteCastleLong = false;
+            bool blackCastleShort = false;
+            bool blackCastleLong = false;   
             int fiftyMoveRule;
             int plyCount;
             int repetition;

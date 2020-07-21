@@ -212,9 +212,6 @@ void nnchesslib::genBlackSinglePawnMoves(ChessBoard board, MoveList& moveList, B
         Move move = createMove(index + 8, index);
         moveList.push_back(move);
     }
-    // 
-    // todo: pawn promotions.
-    // 
 }
 
 void nnchesslib::genBlackDoublePawnMoves(ChessBoard board, MoveList& moveList, BitBoard blockers)
@@ -394,6 +391,7 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
         } 
         // white kingside:
         bool attackedSquaresKS = board.squareAttacked(F1, color) || board.squareAttacked(G1, color);
+        if(attackedSquaresQS) std::cout<<"no attackers XDDDDDDDDDDDDD"<<std::endl;
         if(board.whiteCastleShort && !blockers.get(F1) && !blockers.get(G1) && !attackedSquaresKS)
         {
             Move move = createMove(E1, G1, CASTLING);
