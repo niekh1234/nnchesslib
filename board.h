@@ -78,6 +78,8 @@ namespace nnchesslib
             BitBoard * getPieceOnSquare(int index);
             BitBoard * getColorOnSquare(int index);
 
+            void updateCastlingRights();
+
             void pushMove(Move move);
             void popMove();
     };

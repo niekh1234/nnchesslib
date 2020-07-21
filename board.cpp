@@ -296,6 +296,34 @@ BitBoard * ChessBoard::getColorOnSquare(int index)
     return 0;
 }
 
+void ChessBoard::updateCastlingRights()
+{
+    // if the rooks have moved:
+    bool whiteQSRook = BitBoard(whitePieces.board & rooks.board).get(A1);
+    bool whiteKSRook = BitBoard(whitePieces.board & rooks.board).get(H1);
+    bool blackQSRook = BitBoard(blackPieces.board & rooks.board).get(A8);
+    bool blackKSRook = BitBoard(blackPieces.board & rooks.board).get(H8);
+    // castling rights can only go from true to false. If you move a rook back into proper position you cannot castle anymore.
+    if(!whiteQSRook && whiteCastleLong) whiteCastleLong = false;
+    if(!whiteKSRook && whiteCastleShort) whiteCastleShort = false;
+    if(!blackQSRook && blackCastleLong) blackCastleLong = false;
+    if(!blackKSRook && blackCastleShort) blackCastleShort = false;
+
+    // if the kings have moved:
+    bool whiteKing = BitBoard(whitePieces.board & kings.board).get(E1);
+    bool blackKing = BitBoard(blackPieces.board & kings.board).get(E8);
+    if(!whiteKing && (whiteCastleLong || whiteCastleShort))
+    {
+        whiteCastleLong = false;
+        whiteCastleShort = false;
+    } else if (!blackKing && (blackCastleLong || blackCastleShort))
+    {
+        blackCastleLong = false;
+        blackCastleShort = false;
+    }
+
+}
+
 void ChessBoard::pushMove(Move move)
 {
     // so yea this mostly works but it does not look at the color.
@@ -309,22 +337,24 @@ void ChessBoard::pushMove(Move move)
     theirPieceType = getPieceOnSquare(to);
     // if board is empty it returns 0.
     bool isCapture = theirPieceType;
-
     BitBoard * ourPieces;
     ourPieces = getColorOnSquare(from);
-
     if(isCapture)
+    {
         theirPieceType->set(to, false);
 
         BitBoard * theirPieces;
         theirPieces = getColorOnSquare(to);
         theirPieces->set(to, false);
-
+    }
     // changing to the position of a piece on one of the piece boards: pawn, knight, rook king etc.
     ourPieceType->set(from, false);
     ourPieceType->set(to, true);
     // changing the position of the piece on the white_pieces or black_pieces board.
     ourPieces->set(from, false);
     ourPieces->set(to, true);
+
+    updateCastlingRights();
+    if(whiteCastleLong) std::cout<<"white can castle long\n";
 }
 

@@ -38,6 +38,7 @@ void nnchesslib::genWhiteMoves(ChessBoard board, MoveList& moveList, BitBoard bl
     genSlidingMoves(board,moveList, WHITE, ROOK, blockers);
     genSlidingMoves(board,moveList, WHITE, BISHOP, blockers);
     genSlidingMoves(board,moveList, WHITE, QUEEN, blockers);
+    genCastlingMoves(board,moveList,WHITE, blockers);
 }
 
 void nnchesslib::genBlackMoves(ChessBoard board, MoveList& moveList, BitBoard blockers)
@@ -210,6 +211,44 @@ void nnchesslib::genSlidingMoves(ChessBoard board, MoveList& moveList, Color col
     // todo!
     // if rook check for castle!
     // 
+}
+
+void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color color, BitBoard blockers)
+{
+    if(color == WHITE)
+    {
+        // white queenside:
+        if(board.whiteCastleLong && !blockers.get(B1) && !blockers.get(C1) && !blockers.get(D1))
+        {
+            Move move = createMove(E1, C1);
+            moveList.push_back(move);
+            std::cout<<"white qs\n";
+        } 
+        // white kingside:
+        if(board.whiteCastleLong && !blockers.get(F1) && !blockers.get(G1))
+        {
+            Move move = createMove(E1, G1);
+            moveList.push_back(move);
+            std::cout<<"white ks\n";
+        }
+    }
+    if(color == BLACK)
+    {
+        // black queenside:
+        if(board.blackCastleLong && !blockers.get(B8) && !blockers.get(C8) && !blockers.get(D8))
+        {
+            Move move = createMove(E8, C8);
+            moveList.push_back(move);
+            std::cout<<"black qs\n";
+        } 
+        // black kingside:
+        if(board.blackCastleLong && !blockers.get(F8) && !blockers.get(G8))
+        {
+            Move move = createMove(E8, G8);
+            moveList.push_back(move);
+            std::cout<<"black ks\n";
+        }
+    }
 }
 
 int nnchesslib::popLsb(U64 &board)
