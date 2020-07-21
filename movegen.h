@@ -22,6 +22,10 @@ namespace nnchesslib
     void genWhiteDoublePawnMoves(ChessBoard cboard, MoveList& moveList, BitBoard blockers);
     void genWhitePawnCaptures(ChessBoard cboard, MoveList& moveList, BitBoard blockers);
 
+    void genBlackSinglePawnMoves(ChessBoard cboard, MoveList& moveList, BitBoard blockers);
+    void genBlackDoublePawnMoves(ChessBoard cboard, MoveList& moveList, BitBoard blockers);
+    void genBlackPawnCaptures(ChessBoard cboard, MoveList& moveList, BitBoard blockers);
+
     void genNonSlidingMoves(ChessBoard cboard, MoveList& moveList, Color color, PieceType piece);
     void genSlidingMoves(ChessBoard cboard, MoveList& moveList, Color color, PieceType piece, BitBoard blockers);
     void genKingMoves(ChessBoard cboard, MoveList& moveList, Color color, BitBoard blockers);

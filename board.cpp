@@ -70,26 +70,6 @@ bool ChessBoard::isValidFen(std::string fen)
         && castleRights != "Q" && castleRights != "Qk" && castleRights != "Qq"
         && castleRights != "Qkq")
         return false;
-    
-    // setting the castling rights bools
-    for (auto c : castleRights)
-    {
-        switch(c)
-        {
-            case 'K':
-                whiteCastleShort = true;
-                break;
-            case 'Q':
-                whiteCastleLong = true;
-                break;
-            case 'k':
-                blackCastleShort = true;
-                break;
-            case 'q':
-                blackCastleLong = true;
-                break;
-        }
-    }
 
     // Check valid en passant
     if (enpassant != "-") {
@@ -133,6 +113,31 @@ bool ChessBoard::isValidFen(std::string fen)
         || wp + wn + wb + wr + wq > 15 || bp + bn + bb + br + bq > 15)
         return false;
 
+    // setting some variables now that all the checks have been passed:
+
+    // changing who's turn it is.
+    if(sideToMove == "w") whiteToMove = true;
+    else whiteToMove = false;
+
+    // setting the castling rights bools
+    for (auto c : castleRights)
+    {
+        switch(c)
+        {
+            case 'K':
+                whiteCastleShort = true;
+                break;
+            case 'Q':
+                whiteCastleLong = true;
+                break;
+            case 'k':
+                blackCastleShort = true;
+                break;
+            case 'q':
+                blackCastleLong = true;
+                break;
+        }
+    }
     // All checks passed
     return true;
 }

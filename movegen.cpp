@@ -9,13 +9,7 @@ using namespace nnchesslib;
 void nnchesslib::genLegalMoves(ChessBoard board, MoveList& moveList)
 {
     // genPseudoLegalMoves(cboard, moveList);
-    testXDD();
     // do something XD
-}
-
-void nnchesslib::testXDD()
-{
-    std::cout<<"bruh"<<std::endl;
 }
 
 void nnchesslib::genPseudoLegalMoves(ChessBoard board, MoveList& moveList)
@@ -38,12 +32,20 @@ void nnchesslib::genWhiteMoves(ChessBoard board, MoveList& moveList, BitBoard bl
     genSlidingMoves(board,moveList, WHITE, ROOK, blockers);
     genSlidingMoves(board,moveList, WHITE, BISHOP, blockers);
     genSlidingMoves(board,moveList, WHITE, QUEEN, blockers);
-    genCastlingMoves(board,moveList,WHITE, blockers);
+    genCastlingMoves(board,moveList, WHITE, blockers);
 }
 
 void nnchesslib::genBlackMoves(ChessBoard board, MoveList& moveList, BitBoard blockers)
 {
-    //NULL;
+    genBlackSinglePawnMoves(board,moveList, blockers);
+    genBlackDoublePawnMoves(board,moveList, blockers);
+    genBlackPawnCaptures(board,moveList, blockers);
+    genNonSlidingMoves(board,moveList, BLACK, KNIGHT);
+    genNonSlidingMoves(board,moveList, BLACK, KING);
+    genSlidingMoves(board,moveList, BLACK, ROOK, blockers);
+    genSlidingMoves(board,moveList, BLACK, BISHOP, blockers);
+    genSlidingMoves(board,moveList, BLACK, QUEEN, blockers);
+    genCastlingMoves(board,moveList, BLACK, blockers);
 }
 
 void nnchesslib::genWhiteSinglePawnMoves(ChessBoard board, MoveList& moveList, BitBoard blockers)
@@ -60,8 +62,11 @@ void nnchesslib::genWhiteSinglePawnMoves(ChessBoard board, MoveList& moveList, B
     for(int _ =  0; _ < promotedPawnCount; _++)
     {
         int index = popLsb(promotedPawnsCopy.board);
+        // genPromotions function only works for a single index in the bitboard.
+        BitBoard singlePawnBoard;
+        singlePawnBoard.set(index, true);
 
-        genPromotions(index - 8, moveList, WHITE, promotedPawns);
+        genPromotions(index - 8, moveList, WHITE, singlePawnBoard);
     }
 
     pawnsMoved.board &= ~rank_bb[RANK_8];
@@ -154,6 +159,119 @@ void nnchesslib::genWhitePawnCaptures(ChessBoard board, MoveList& moveList, BitB
     }
 }
 
+void nnchesslib::genBlackSinglePawnMoves(ChessBoard board, MoveList& moveList, BitBoard blockers)
+{
+    BitBoard pawns = board.getBoard(BLACK, PAWN);
+    // making a move and checking if pawns have been blocked
+    BitBoard pawnsMoved = (pawns.board >> 8) & ~blockers.board;
+
+    BitBoard promotedPawns = pawnsMoved.board & rank_bb[RANK_1];
+    // make a copy because we still want to use promotedpawns bitboard after lsb has been popped.
+    BitBoard promotedPawnsCopy = promotedPawns;
+    int promotedPawnCount = __builtin_popcountll(promotedPawns.board);
+
+    promotedPawns.printDebug();
+
+    for(int _ =  0; _ < promotedPawnCount; _++)
+    {
+        int index = popLsb(promotedPawnsCopy.board);
+        // genPromotions function only works for a single index in the bitboard.
+        BitBoard singlePawnBoard;
+        singlePawnBoard.set(index, true);
+
+        genPromotions(index + 8, moveList, BLACK, singlePawnBoard);
+    }
+
+    pawnsMoved.board &= ~rank_bb[RANK_1];
+
+    int validPawnCount = __builtin_popcountll(pawnsMoved.board);
+
+    for(int _ = 0; _ < validPawnCount; _++)
+    {
+        // finding current index of pawn.
+        int index = popLsb(pawnsMoved.board);
+
+        if (index == -1)
+            continue;
+        // adding to pseudo legal movelist. 
+        Move move = createMove(index + 8, index);
+        moveList.push_back(move);
+    }
+    // 
+    // todo: pawn promotions.
+    // 
+}
+
+void nnchesslib::genBlackDoublePawnMoves(ChessBoard board, MoveList& moveList, BitBoard blockers)
+{
+    // targetting pawns that are on the second rank. These are the only pawns that can move twice.
+    BitBoard unmovedPawns = board.getBoard(BLACK, PAWN).board & rank_bb[RANK_7];
+    // moving pawns once to check if they are blocked:
+    BitBoard firstMove = (unmovedPawns.board >> 8) & ~blockers.board;
+    // moving again:
+    BitBoard secondMove = (firstMove.board >> 8) & ~blockers.board;
+
+    int validPawnCount = __builtin_popcountll(secondMove.board);
+
+    for(int _ = 0; _ < validPawnCount; _++)
+    {
+        // finding current index of pawn.
+        int index = popLsb(secondMove.board);
+
+        if (index == -1)
+            continue;
+        // adding to pseudo legal movelist. 
+        Move move = createMove(index + 16, index);
+        moveList.push_back(move);
+    }
+}
+
+void nnchesslib::genBlackPawnCaptures(ChessBoard board, MoveList& moveList, BitBoard blockers)
+{
+    // getting board for black pawns.
+    BitBoard pawns = board.getBoard(BLACK, PAWN).board;
+    BitBoard white = board.getBoard(WHITE);
+    // counting the amount of white pawns.
+    int pawnCount = __builtin_popcountll(pawns.board);
+
+    for(int _ = 0; _ < pawnCount; _++)
+    {
+        // getting the index of a specific pawn and removing it from the board.
+        int index = popLsb(pawns.board);
+
+        if (index == -1)
+            continue;
+        
+        // getting attacks and comparing to white pieces.
+        BitBoard pawnAttacks = Attacks::getNonSlidingAttacks(index, BLACK, PAWN) & white.board;
+        // checking whether there is an attack on the eighth rank.
+
+        BitBoard promotedPawns = pawnAttacks.board & rank_bb[RANK_1];
+        // if there is an attack generate promotion moves.
+        if(promotedPawns.board)
+            genPromotions(index, moveList, BLACK, promotedPawns);
+
+        // removing attacks on the eighth rank to prevent non promotions moves from being added.
+        pawnAttacks.board &= ~rank_bb[RANK_1];
+        if(pawnAttacks.board){
+            // getting the amount of pieces a pawn is attacking.
+            int attackCount = __builtin_popcountll(pawnAttacks.board);
+            
+            for(int num = 0; num < attackCount; num++)
+            {
+                // getting the index of the attacked pawn/piece from black.
+                int attackIndex = popLsb(pawnAttacks.board);
+
+                if (attackIndex == -1)
+                    continue;
+                // generating a move with our pawn index and the index of blacks attacked pawn/piece.
+                Move move = createMove(index, attackIndex);
+                moveList.push_back(move);
+            }
+        }
+    }
+}
+
 void nnchesslib::genNonSlidingMoves(ChessBoard board, MoveList& moveList, Color color, PieceType piece)
 {
     // getting target pieces on the board for a specific color.
@@ -221,7 +339,6 @@ void nnchesslib::genSlidingMoves(ChessBoard board, MoveList& moveList, Color col
                 
                 // generating a move with our piece index and the potential square it can move to. 
                 Move move = createMove(index, attackIndex);
-                std::cout<<from_Square(move)<<std::endl;
                 moveList.push_back(move);
             }
         }
