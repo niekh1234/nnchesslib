@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <types.h>
 #include <move.h>
+#include <attacks.h>
 
 using namespace nnchesslib;
 
@@ -114,6 +115,7 @@ bool ChessBoard::isValidFen(std::string fen)
         return false;
 
     // setting some variables now that all the checks have been passed:
+    // put this in dedicated function in the future.
 
     // changing who's turn it is.
     if(sideToMove == "w") whiteToMove = true;
@@ -142,8 +144,7 @@ bool ChessBoard::isValidFen(std::string fen)
     return true;
 }
 
-// this entire function works but needs to be revised.
-// it works but it does not work logically.
+
 void ChessBoard::generateBitBoards(std::string fen)
 {
     assert(isValidFen(fen));
@@ -301,6 +302,30 @@ BitBoard * ChessBoard::getColorOnSquare(int index)
     return 0;
 }
 
+// idea is to generate a bitboard where all opponent attacks are a 1.
+bool ChessBoard::squareAttacked(int square, Color color)
+{
+    BitBoard pawnAttacks = Attacks::getNonSlidingAttacks(square, color, PAWN);
+    if(pawnAttacks.board & getBoard(getOppositeColor(color), PAWN).board) return true;
+
+    BitBoard knightAttacks = Attacks::getNonSlidingAttacks(square, color, KNIGHT);
+    if(knightAttacks.board & getBoard(getOppositeColor(color), KNIGHT).board) return true;
+
+    BitBoard kingAttacks = Attacks::getNonSlidingAttacks(square, color, KING);
+    if(kingAttacks.board & getBoard(getOppositeColor(color), KING).board) return true;
+
+    BitBoard bishopAttacks = Attacks::getSlidingAttacks(square, BISHOP, getBlockers().board);
+    if(bishopAttacks.board & getBoard(getOppositeColor(color), BISHOP).board) return true;
+
+    BitBoard rookAttacks = Attacks::getSlidingAttacks(square, ROOK, getBlockers().board);
+    if(rookAttacks.board & getBoard(getOppositeColor(color), ROOK).board) return true;
+
+    BitBoard queenAttacks = Attacks::getSlidingAttacks(square, QUEEN, getBlockers().board);
+    if(queenAttacks.board & getBoard(getOppositeColor(color), QUEEN).board) return true;
+
+    return false;
+}
+
 void ChessBoard::updateCastlingRights()
 {
     // if the rooks have moved:
@@ -365,5 +390,11 @@ void ChessBoard::pushMove(Move move)
 void ChessBoard::popMove()
 {
 
+}
+
+Color ChessBoard::getOppositeColor(Color color)
+{
+    if(color == WHITE) return BLACK;
+    return WHITE;
 }
 

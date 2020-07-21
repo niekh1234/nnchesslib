@@ -20,17 +20,7 @@ namespace nnchesslib
 {
     struct BoardInfo
     {
-        // Copied from move
-        bool whiteCastleShort = false;
-        bool whiteCastleLong = false;
-        bool blackCastleShort = false;
-        bool blackCastleLong = false;
-        
-        int fiftyMoveRule;
-        int plyCount;
-
         // Uncopied from move
-        // Piece capturedPiece;
         BoardInfo* previousBoard;
         int repetition;
     };
@@ -38,6 +28,7 @@ namespace nnchesslib
     class ChessBoard
     {
         private:
+            // ChessBoard class has 8 different bitboards, one for each piece, and one for black and white.
             BitBoard whitePieces;
             BitBoard blackPieces;
             BitBoard pawns;
@@ -64,24 +55,39 @@ namespace nnchesslib
 
             ChessBoard();
             ChessBoard(std::string fenRepresentation);
+
             // Determine whether a fen is valid.
             bool isValidFen(std::string fen);
             // Cout current instance of board. 
             void print();
-
+            // Return the bitboard of a specified PieceType and color.
             BitBoard getBoard(Color color, PieceType piece);
+            // Return the bitboard of a specified color.
             BitBoard getBoard(Color color);
+            // Return all occupied squares in the board.
             BitBoard getBlockers();
 
+            // Returns true if it is white to move and false if black is to move.
             bool getWhiteToMove();
 
+            // Returns the piece bitboard by looking at which piece is on a specific index.
             BitBoard * getPieceOnSquare(int index);
+            // Returns the color bitboard by looking at which piece is on a specific index.
             BitBoard * getColorOnSquare(int index);
 
+            // Determines whether a square is attacked by an opponent piece.
+            bool squareAttacked(int square, Color color);
+
+            // Updates the boards castling rights.
             void updateCastlingRights();
 
+            // Pushes a move to the board.
             void pushMove(Move move);
+            // Undo's a move.
             void popMove();
+
+            // Returns the opposite color: BLACK -> WHITE
+            Color getOppositeColor(Color color);
     };
 }
 
