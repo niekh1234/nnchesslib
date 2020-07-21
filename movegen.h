@@ -9,10 +9,10 @@ namespace nnchesslib
 {
     typedef std::vector<Move> MoveList;
 
-    void genLegalMoves(ChessBoard cboard, MoveList& moveList);
+    // Function that generates pseudo-legal moves and looks at whether it put the king in check.
+    MoveList genLegalMoves(ChessBoard cboard);
+    // function for calling pseudo-legal move generating functions.
     void genPseudoLegalMoves(ChessBoard cboard, MoveList& moveList);
-
-    void testXDD();
 
     void genWhiteMoves(ChessBoard cboard, MoveList& moveList, BitBoard blockers);
     void genBlackMoves(ChessBoard cboard, MoveList& moveList, BitBoard blockers);

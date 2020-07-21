@@ -6,10 +6,30 @@
 
 using namespace nnchesslib;
 
-void nnchesslib::genLegalMoves(ChessBoard board, MoveList& moveList)
+MoveList nnchesslib::genLegalMoves(ChessBoard board)
 {
-    // genPseudoLegalMoves(cboard, moveList);
-    // do something XD
+    MoveList pseudoLegalMoves;
+    MoveList legalMoves;
+
+    genPseudoLegalMoves(board, pseudoLegalMoves);
+    
+    for(auto move : pseudoLegalMoves)
+    {
+        ChessBoard temp = board;
+        temp.pushMove(move);
+
+        Color boardTurn = BLACK;
+        if(board.getWhiteToMove()) boardTurn = WHITE;
+
+        if(!temp.kingInCheck(boardTurn)) 
+        {
+            printMove(move);
+            temp.print();
+            legalMoves.push_back(move);
+        }
+    }
+    std::cout<<legalMoves.size()<<std::endl;
+    return legalMoves;
 }
 
 void nnchesslib::genPseudoLegalMoves(ChessBoard board, MoveList& moveList)
@@ -84,9 +104,6 @@ void nnchesslib::genWhiteSinglePawnMoves(ChessBoard board, MoveList& moveList, B
         Move move = createMove(index - 8, index);
         moveList.push_back(move);
     }
-    // 
-    // todo: pawn promotions.
-    // 
 }
 
 void nnchesslib::genWhiteDoublePawnMoves(ChessBoard board, MoveList& moveList, BitBoard blockers)
@@ -169,8 +186,6 @@ void nnchesslib::genBlackSinglePawnMoves(ChessBoard board, MoveList& moveList, B
     // make a copy because we still want to use promotedpawns bitboard after lsb has been popped.
     BitBoard promotedPawnsCopy = promotedPawns;
     int promotedPawnCount = __builtin_popcountll(promotedPawns.board);
-
-    promotedPawns.printDebug();
 
     for(int _ =  0; _ < promotedPawnCount; _++)
     {
@@ -370,14 +385,16 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
     if(color == WHITE)
     {
         // white queenside:
-        if(board.whiteCastleLong && !blockers.get(B1) && !blockers.get(C1) && !blockers.get(D1))
+        bool attackedSquaresQS = board.squareAttacked(C1, color) || board.squareAttacked(D1, color);
+        if(board.whiteCastleLong && !blockers.get(B1) && !blockers.get(C1) && !blockers.get(D1) && !attackedSquaresQS)
         {
             Move move = createMove(E1, C1, CASTLING);
             moveList.push_back(move);
             std::cout<<"white qs\n";
         } 
         // white kingside:
-        if(board.whiteCastleShort && !blockers.get(F1) && !blockers.get(G1))
+        bool attackedSquaresKS = board.squareAttacked(F1, color) || board.squareAttacked(G1, color);
+        if(board.whiteCastleShort && !blockers.get(F1) && !blockers.get(G1) && !attackedSquaresKS)
         {
             Move move = createMove(E1, G1, CASTLING);
             moveList.push_back(move);
@@ -387,14 +404,16 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
     if(color == BLACK)
     {
         // black queenside:
-        if(board.blackCastleLong && !blockers.get(B8) && !blockers.get(C8) && !blockers.get(D8))
+        bool attackedSquaresQS = board.squareAttacked(C8, color) || board.squareAttacked(D8, color);
+        if(board.blackCastleLong && !blockers.get(B8) && !blockers.get(C8) && !blockers.get(D8) && !attackedSquaresQS)
         {
             Move move = createMove(E8, C8, CASTLING);
             moveList.push_back(move);
             std::cout<<"black qs\n";
         } 
         // black kingside:
-        if(board.blackCastleShort && !blockers.get(F8) && !blockers.get(G8))
+        bool attackedSquaresKS = board.squareAttacked(F8, color) || board.squareAttacked(G8, color);
+        if(board.blackCastleShort && !blockers.get(F8) && !blockers.get(G8) && !attackedSquaresKS)
         {
             Move move = createMove(E8, G8, CASTLING);
             moveList.push_back(move);

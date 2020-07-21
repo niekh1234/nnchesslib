@@ -75,13 +75,19 @@ namespace nnchesslib
             // Returns the color bitboard by looking at which piece is on a specific index.
             BitBoard * getColorOnSquare(int index);
 
+            // Determines whether a black or white king is in check. Usage: kingInCheck(BLACK) returns true if black king in check.
+            bool kingInCheck(Color color);
             // Determines whether a square is attacked by an opponent piece.
             bool squareAttacked(int square, Color color);
 
             // Updates the boards castling rights.
             void updateCastlingRights();
 
-            // Pushes a move to the board.
+            // Pushes a castling move to the board.
+            void pushCastlingMove(Move move);
+            // Pushes a promotion move to the board.
+            void pushPromotionMove(Move move);
+            // Pushes a normal move to the board.
             void pushMove(Move move);
             // Undo's a move.
             void popMove();

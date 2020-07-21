@@ -28,15 +28,12 @@ int main(int argc, char *argv[])
 {
     initAll();
 
-    const std::string testFen = "1r2r1k1/pp6/3K4/4p1pp/4P3/5P2/6PP/1R6 b - - 1 34";
+    const std::string testFen = "k7/8/8/3Q4/2K5/8/8/8 b - - 0 1";
 
-    ChessBoard test("rnb1kbn1/ppp1pp2/6p1/3P3r/5BP1/1PqP3p/P1PN1P1P/R2QKB1R b KQq - 0 10");
+    ChessBoard test("2k3r1/8/8/8/8/8/8/4K2R w K - 0 1");
     test.print();
-    MoveList testing;
-    genPseudoLegalMoves(test, testing);
-    if(test.squareAttacked(E5, WHITE)) std::cout<<"Yep that is an attack"<<std::endl;
 
-    // for (Move m : testing)
-    //     printMove(m);
+    MoveList bruh = genLegalMoves(test);
+
     return 0;
 }

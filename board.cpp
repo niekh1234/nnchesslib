@@ -302,6 +302,14 @@ BitBoard * ChessBoard::getColorOnSquare(int index)
     return 0;
 }
 
+bool ChessBoard::kingInCheck(Color color)
+{
+    BitBoard kingBoard = getBoard(color, KING);
+    int kingSquare = __builtin_ffsll(kingBoard.board) - 1;
+
+    return squareAttacked(kingSquare, color);
+}
+
 // idea is to generate a bitboard where all opponent attacks are a 1.
 bool ChessBoard::squareAttacked(int square, Color color)
 {
@@ -354,26 +362,106 @@ void ChessBoard::updateCastlingRights()
 
 }
 
-void ChessBoard::pushMove(Move move)
+void ChessBoard::pushCastlingMove(Move move)
 {
     int from = from_Square(move);
     int to = to_Square(move);
+    // gets the bitboard corresponding to our piece color.
+    BitBoard * ourPieces = getColorOnSquare(from);
+
+    // I already thought of a more efficient way of writing this but cannot be asked at the moment. + this is probably quite fast.
+    // white ks castle
+    if(to == 6)
+    {
+        kings.set(E1, false);
+        rooks.set(H1, false);
+        kings.set(G1, true);
+        rooks.set(F1, true);
+        ourPieces->set(E1, false);
+        ourPieces->set(H1, false);
+        ourPieces->set(G1, true);
+        ourPieces->set(F1, true);
+    } 
+    // white qs castle
+    else if (to == 0)
+    {
+        kings.set(E1, false);
+        rooks.set(A1, false);
+        kings.set(C1, true);
+        rooks.set(D1, true);
+        ourPieces->set(E1, false);
+        ourPieces->set(A1, false);
+        ourPieces->set(C1, true);
+        ourPieces->set(D1, true);
+    }
+    else if (to == 56)
+    {
+        kings.set(E8, false);
+        rooks.set(H8, false);
+        kings.set(G8, true);
+        rooks.set(F8, true);
+        ourPieces->set(E8, false);
+        ourPieces->set(H8, false);
+        ourPieces->set(G8, true);
+        ourPieces->set(F8, true);
+    } 
+    // black qs castle
+    else if (to == 63)
+    {
+        kings.set(E8, false);
+        rooks.set(A8, false);
+        kings.set(C8, true);
+        rooks.set(D8, true);
+        ourPieces->set(E8, false);
+        ourPieces->set(A8, false);
+        ourPieces->set(C8, true);
+        ourPieces->set(D8, true);
+    }
+
+    std::cout<<from<<" to "<<to<<std::endl;
+}
+
+void ChessBoard::pushPromotionMove(Move move)
+{
+    int from = from_Square(move);
+    int to = to_Square(move);
+
+    std::cout<<(from, to)<<std::endl;
+}
+
+void ChessBoard::pushMove(Move move)
+{
+    // getting the movetype
+    MoveType type = moveType(move);
+
+    if(type == CASTLING)
+    {
+        pushCastlingMove(move);
+        return;
+    } 
+    else if(type == PROMOTION)
+    {
+        pushPromotionMove(move);
+        return;
+    }
+
+    int from = from_Square(move);
+    int to = to_Square(move);
+
     // gets the bitboard corresponding to our piecetype, e.g. knights, pawns etc.
-    BitBoard * ourPieceType;
-    ourPieceType = getPieceOnSquare(from);
+    BitBoard * ourPieceType = getPieceOnSquare(from);
     // gets the bitboard corresponding to the opponent piecetype (at least if it is a capture).
-    BitBoard * theirPieceType;
-    theirPieceType = getPieceOnSquare(to);
+    BitBoard * theirPieceType = getPieceOnSquare(to);
     // if board is empty it returns 0.
     bool isCapture = theirPieceType;
-    BitBoard * ourPieces;
-    ourPieces = getColorOnSquare(from);
+    // gets the bitboard corresponding to our piece color.
+    BitBoard * ourPieces = getColorOnSquare(from);
+
     if(isCapture)
     {
         theirPieceType->set(to, false);
 
-        BitBoard * theirPieces;
-        theirPieces = getColorOnSquare(to);
+        BitBoard * theirPieces = getColorOnSquare(to);
         theirPieces->set(to, false);
     }
     // changing to the position of a piece on one of the piece boards: pawn, knight, rook king etc.
