@@ -439,22 +439,8 @@ void ChessBoard::pushPromotionMove(Move move)
     if(piece == KNIGHT) knights.set(to, true);
 }
 
-void ChessBoard::pushMove(Move move)
+void ChessBoard::pushRegularMove(Move move)
 {
-    // getting the movetype
-    MoveType type = moveType(move);
-
-    if(type == CASTLING)
-    {
-        pushCastlingMove(move);
-        return;
-    } 
-    else if(type == PROMOTION)
-    {
-        pushPromotionMove(move);
-        return;
-    }
-
     int from = from_Square(move);
     int to = to_Square(move);
 
@@ -480,8 +466,20 @@ void ChessBoard::pushMove(Move move)
     // changing the position of the piece on the white_pieces or black_pieces board.
     ourPieces->set(from, false);
     ourPieces->set(to, true);
+}
 
+void ChessBoard::pushMove(Move move)
+{
+    // getting the movetype
+    MoveType type = moveType(move);
+
+    if(type == CASTLING) pushCastlingMove(move);
+    else if(type == PROMOTION) pushPromotionMove(move);
+    else if(type == REGULAR) pushRegularMove(move);
+
+    // Update board information
     updateCastlingRights();
+    whiteToMove = !whiteToMove;
 }
 
 // removes one move from the list.

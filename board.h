@@ -87,7 +87,9 @@ namespace nnchesslib
             void pushCastlingMove(Move move);
             // Pushes a promotion move to the board.
             void pushPromotionMove(Move move);
-            // Pushes a normal move to the board.
+            // Pushes a regular move to the board.
+            void pushRegularMove(Move move);
+            // Pushes a move to the board.
             void pushMove(Move move);
             // Undo's a move.
             void popMove();
