@@ -475,7 +475,7 @@ void ChessBoard::pushMove(Move move)
 
     if(type == CASTLING) pushCastlingMove(move);
     else if(type == PROMOTION) pushPromotionMove(move);
-    else if(type == REGULAR) pushRegularMove(move);
+    else if(type == NORMAL) pushRegularMove(move);
 
     // Update board information
     updateCastlingRights();
