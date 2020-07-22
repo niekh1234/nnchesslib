@@ -1,0 +1,7 @@
+Todo!
+- change 50 move rule.
+- en passant
+- board to fen representation (oke maat doe ik wel ff xDDDDDDDDDD)
+- pop move
+- pushCastlingMove even opnieuw maken want echt trash
+- Comment everything

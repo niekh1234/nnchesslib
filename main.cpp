@@ -28,10 +28,12 @@ int main(int argc, char *argv[])
 {
     initAll();
 
-    ChessBoard test("r3k2r/p6p/8/8/3p2P1/8/8/R3K3 w Q - 0 1");
-    test.print();
+    ChessBoard test("rnbqkbnr/pppp1ppp/8/8/3Pp3/4P2P/PPP2PP1/RNBQKBNR b KQkq d3 0 3");
 
-    MoveList bruh = genLegalMoves(test);
+    test.whiteEnPassantTarget.printDebug();
+    MoveList easy = genLegalMoves(test);
+
+    test.print();
 
     return 0;
 }

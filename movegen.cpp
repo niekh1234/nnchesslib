@@ -23,7 +23,6 @@ MoveList nnchesslib::genLegalMoves(ChessBoard board)
 
         if(!temp.kingInCheck(boardTurn)) 
         {
-            printMove(move);
             temp.print();
             legalMoves.push_back(move);
         }
@@ -130,6 +129,7 @@ void nnchesslib::genWhiteDoublePawnMoves(ChessBoard board, MoveList& moveList, B
     }
 }
 
+
 void nnchesslib::genWhitePawnCaptures(ChessBoard board, MoveList& moveList, BitBoard blockers)
 {
     // getting board for white pawns.
@@ -148,7 +148,16 @@ void nnchesslib::genWhitePawnCaptures(ChessBoard board, MoveList& moveList, BitB
         
         // getting attacks and comparing to black pieces.
         BitBoard pawnAttacks = Attacks::getNonSlidingAttacks(index, WHITE, PAWN) & black.board;
-        // checking whether there is an attack on the eighth rank.
+
+        // getting en passant move by looking at if a white pawn is attacking a predefined en passant square ('under' the pawn, actually it is above the pawn because it is a black pawn)
+        BitBoard enPassant = Attacks::getNonSlidingAttacks(index, WHITE, PAWN) & board.whiteEnPassantTarget.board;
+        if(enPassant.board)
+        {
+            int epIndex = popLsb(enPassant.board);
+
+            Move enPassantMove = createMove(index, epIndex, ENPASSANT);
+            moveList.push_back(enPassantMove);
+        }
 
         BitBoard promotedPawns = pawnAttacks.board & rank_bb[RANK_8];
         // if there is an attack generate promotion moves.
@@ -257,6 +266,16 @@ void nnchesslib::genBlackPawnCaptures(ChessBoard board, MoveList& moveList, BitB
         // getting attacks and comparing to white pieces.
         BitBoard pawnAttacks = Attacks::getNonSlidingAttacks(index, BLACK, PAWN) & white.board;
         // checking whether there is an attack on the eighth rank.
+
+        // getting en passant move by looking at if a white pawn is attacking a predefined en passant square ('above' the pawn, actually it is above the pawn because it is a white pawn)
+        BitBoard enPassant = Attacks::getNonSlidingAttacks(index, BLACK, PAWN) & board.blackEnPassantTarget.board;
+        if(enPassant.board)
+        {
+            int epIndex = popLsb(enPassant.board);
+
+            Move enPassantMove = createMove(index, epIndex, ENPASSANT);
+            moveList.push_back(enPassantMove);
+        }
 
         BitBoard promotedPawns = pawnAttacks.board & rank_bb[RANK_1];
         // if there is an attack generate promotion moves.
@@ -382,7 +401,7 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
     if(color == WHITE)
     {
         // white queenside:
-        bool attackedSquaresQS = board.squareAttacked(C1, color) || board.squareAttacked(D1, color);
+        bool attackedSquaresQS = board.squareAttacked(C1, color) || board.squareAttacked(D1, color) || board.squareAttacked(E1, color);
         if(board.whiteCastleLong && !blockers.get(B1) && !blockers.get(C1) && !blockers.get(D1) && !attackedSquaresQS)
         {
             Move move = createMove(E1, C1, CASTLING);
@@ -390,7 +409,7 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
             std::cout<<"white qs\n";
         } 
         // white kingside:
-        bool attackedSquaresKS = board.squareAttacked(F1, color) || board.squareAttacked(G1, color);
+        bool attackedSquaresKS = board.squareAttacked(F1, color) || board.squareAttacked(G1, color) || board.squareAttacked(E1, color);
         if(attackedSquaresQS) std::cout<<"no attackers XDDDDDDDDDDDDD"<<std::endl;
         if(board.whiteCastleShort && !blockers.get(F1) && !blockers.get(G1) && !attackedSquaresKS)
         {
@@ -402,7 +421,7 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
     if(color == BLACK)
     {
         // black queenside:
-        bool attackedSquaresQS = board.squareAttacked(C8, color) || board.squareAttacked(D8, color);
+        bool attackedSquaresQS = board.squareAttacked(C8, color) || board.squareAttacked(D8, color) || board.squareAttacked(E8, color);
         if(board.blackCastleLong && !blockers.get(B8) && !blockers.get(C8) && !blockers.get(D8) && !attackedSquaresQS)
         {
             Move move = createMove(E8, C8, CASTLING);
@@ -410,7 +429,7 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
             std::cout<<"black qs\n";
         } 
         // black kingside:
-        bool attackedSquaresKS = board.squareAttacked(F8, color) || board.squareAttacked(G8, color);
+        bool attackedSquaresKS = board.squareAttacked(F8, color) || board.squareAttacked(G8, color) || board.squareAttacked(E8, color);
         if(board.blackCastleShort && !blockers.get(F8) && !blockers.get(G8) && !attackedSquaresKS)
         {
             Move move = createMove(E8, G8, CASTLING);

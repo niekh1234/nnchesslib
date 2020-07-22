@@ -2,29 +2,17 @@
 #define UTILS_H
 
 #include <types.h>
+#include <string>
 
-using namespace nnchesslib;
+namespace nnchesslib{
 
-// counts 1's in a U64
-extern int countBits(U64 n)
-{
-    int output = 0;
-    while (n != 0)
-    {
-        n &= (n - 1);
-        output++;
-    }
-    return output;
-}
+    int countBits(U64 n);
 
-extern int bitScanForward(U64 board)
-{
-    return __builtin_ffsll(board) - 1;
-}
+    int bitScanForward(U64 board);
 
-extern int bitScanReverse(U64 board)
-{
-    return 63 - __builtin_clzll(board);
+    int bitScanReverse(U64 board);
+
+    extern int getEPSquare(std::string square);
 }
 
 #endif

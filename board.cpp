@@ -9,6 +9,7 @@
 #include <types.h>
 #include <move.h>
 #include <attacks.h>
+#include <utils.h>
 
 using namespace nnchesslib;
 
@@ -139,6 +140,13 @@ bool ChessBoard::isValidFen(std::string fen)
                 blackCastleLong = true;
                 break;
         }
+    }
+
+    // setting en passant bitboard.
+    if(enpassant != "-")
+    {
+        if(whiteToMove)  whiteEnPassantTarget.set(getEPSquare(enpassant), true);
+        if(!whiteToMove) blackEnPassantTarget.set(getEPSquare(enpassant), true);
     }
     // All checks passed
     return true;
@@ -334,6 +342,24 @@ bool ChessBoard::squareAttacked(int square, Color color)
     return false;
 }
 
+void ChessBoard::setEnPassantPossibility(BitBoard ourPieces, int from, int to)
+{
+    // There can only be one target at the time, so clearing the boards every move.
+    whiteEnPassantTarget.board = (U64)0;
+    blackEnPassantTarget.board = (U64)0;
+    // black en passant possibility (white has double moved)
+    if((from / 8 == 1 && to / 8 == 3) && ourPieces.board & pawns.board)
+    {
+        // set the square under the pawn as a target for a black pawn (in a seperate bitboard)
+        blackEnPassantTarget.set(to - 8, true);
+    }
+    // white en passant possibility (black has double moved)
+    else if((from / 8 == 6 && to / 8 == 4) && ourPieces.board & pawns.board)
+    {
+        whiteEnPassantTarget.set(to + 8, true);
+    }
+}
+
 void ChessBoard::updateCastlingRights()
 {
     // if the rooks have moved:
@@ -369,6 +395,7 @@ void ChessBoard::pushCastlingMove(Move move)
     BitBoard * ourPieces = getColorOnSquare(from);
 
     // I already thought of a more efficient way of writing this but cannot be asked at the moment. + this is probably quite fast.
+
     // white ks castle
     if(to == 6)
     {
@@ -439,6 +466,36 @@ void ChessBoard::pushPromotionMove(Move move)
     if(piece == KNIGHT) knights.set(to, true);
 }
 
+void ChessBoard::pushEnPassantMove(Move move)
+{
+    int from = from_Square(move);
+    int to = to_Square(move);
+
+    BitBoard * ourPieceType = getPieceOnSquare(from);
+
+    // White double pawn move (this needs to be seperated because we need to remove the pawn above or under the targetted square)
+    if(from >= A5)
+    {
+        BitBoard * theirPiece = getPieceOnSquare(to - 8);
+        whitePieces.set(from, false);
+        whitePieces.set(to, true);
+        ourPieceType->set(from, false);
+        ourPieceType->set(to, true);
+        theirPiece->set(to - 8, false);
+        blackPieces.set(to - 8, false);
+    } 
+    else if(from <= H4)
+    {
+        BitBoard * theirPiece = getPieceOnSquare(to + 8);
+        blackPieces.set(from, false);
+        blackPieces.set(to, true);
+        ourPieceType->set(from, false);
+        ourPieceType->set(to, true);
+        theirPiece->set(to + 8, false);
+        whitePieces.set(to + 8, false);
+    }
+}
+
 void ChessBoard::pushRegularMove(Move move)
 {
     int from = from_Square(move);
@@ -453,12 +510,18 @@ void ChessBoard::pushRegularMove(Move move)
     // gets the bitboard corresponding to our piece color.
     BitBoard * ourPieces = getColorOnSquare(from);
 
+    fiftyMoveRule++;
+
+    if (pawns.board & ourPieceType->board)    
+        fiftyMoveRule = 0;
+
     if(isCapture)
     {
         theirPieceType->set(to, false);
 
         BitBoard * theirPieces = getColorOnSquare(to);
         theirPieces->set(to, false);
+        fiftyMoveRule = 0;
     }
     // changing to the position of a piece on one of the piece boards: pawn, knight, rook king etc.
     ourPieceType->set(from, false);
@@ -466,6 +529,8 @@ void ChessBoard::pushRegularMove(Move move)
     // changing the position of the piece on the white_pieces or black_pieces board.
     ourPieces->set(from, false);
     ourPieces->set(to, true);
+
+    setEnPassantPossibility(*ourPieces, from, to);
 }
 
 void ChessBoard::pushMove(Move move)
@@ -475,11 +540,15 @@ void ChessBoard::pushMove(Move move)
 
     if(type == CASTLING) pushCastlingMove(move);
     else if(type == PROMOTION) pushPromotionMove(move);
+    else if(type == ENPASSANT) pushEnPassantMove(move);
     else if(type == NORMAL) pushRegularMove(move);
 
     // Update board information
     updateCastlingRights();
     whiteToMove = !whiteToMove;
+
+    if (whiteToMove)
+        plyCount++;
 }
 
 // removes one move from the list.
@@ -494,3 +563,78 @@ Color ChessBoard::getOppositeColor(Color color)
     return WHITE;
 }
 
+std::string ChessBoard::getPieceChar(int i)
+{
+    if(BitBoard(pawns.board & whitePieces.board).get(i)) return "P";
+    if(BitBoard(knights.board & whitePieces.board).get(i)) return "N";
+    if(BitBoard(bishops.board & whitePieces.board).get(i)) return "B";
+    if(BitBoard(rooks.board & whitePieces.board).get(i)) return "R";
+    if(BitBoard(queens.board & whitePieces.board).get(i)) return "Q";
+    if(BitBoard(kings.board & whitePieces.board).get(i)) return "K";
+    if(BitBoard(pawns.board & blackPieces.board).get(i)) return "p";
+    if(BitBoard(knights.board & blackPieces.board).get(i)) return "n";
+    if(BitBoard(bishops.board & blackPieces.board).get(i)) return "b";
+    if(BitBoard(rooks.board & blackPieces.board).get(i)) return "r";
+    if(BitBoard(queens.board & blackPieces.board).get(i)) return "q";
+    if(BitBoard(kings.board & blackPieces.board).get(i)) return "k";
+    return "0";
+}
+
+std::string ChessBoard::convertToFen()
+{
+    std::string fen = "";
+    for (int y = 0; y <= 7; y++)
+    {
+        int spaces = 0;
+        for (int x = 0; x <= 7; x++)
+        {
+            std::string c = getPieceChar((7-y)*8 + x);
+            if (c != "0")
+            {
+                if (spaces > 0)
+                {
+                    fen += std::to_string(spaces);
+                    spaces = 0;
+                }
+                fen += c;
+            }
+            else
+            {
+                spaces++;
+            }
+        }
+        if (spaces > 0)
+        {
+            fen += std::to_string(spaces);
+            spaces = 0;
+        }
+        fen += "/";
+    }
+    fen.pop_back();
+    fen += " ";
+
+    // Add side to move
+    whiteToMove ? fen += "w " : fen += "b ";
+    
+    // Add castling rights
+    if (!(whiteCastleLong || whiteCastleShort || blackCastleLong || blackCastleShort))
+        fen += "- ";
+    else
+    {
+        if (whiteCastleShort) fen += "K";
+        if (whiteCastleLong) fen += "Q";
+        if (blackCastleShort) fen += "k";
+        if (blackCastleLong) fen += "q";
+        fen += " ";
+    }
+
+    // Add en passant
+    fen += "- ";
+
+
+    // Add halfmove clock and fullmove number
+    fen += std::to_string(fiftyMoveRule) + " ";
+    fen += std::to_string(plyCount);
+
+    return fen;
+}

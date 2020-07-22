@@ -1,14 +1,3 @@
-// -----------TODO--------------
-// gen all bitboards
-// ---white, black, pawns, knights, bishops, rooks, queens, kings
-
-// setup board from start function
-
-// TRANSLATE FEN
-// ---From and to fen
-
-// manipulate bitboards (maybe for different file)
-// ---make move, (push move, pop move)
 #ifndef BOARD_H
 #define BOARD_H
 
@@ -51,6 +40,9 @@ namespace nnchesslib
             int plyCount;
             int repetition;
 
+            BitBoard whiteEnPassantTarget;
+            BitBoard blackEnPassantTarget;
+
             BoardInfo* previousBoard;
 
             ChessBoard();
@@ -80,6 +72,7 @@ namespace nnchesslib
             // Determines whether a square is attacked by an opponent piece.
             bool squareAttacked(int square, Color color);
 
+            void setEnPassantPossibility(BitBoard ourPieces, int from, int to);
             // Updates the boards castling rights.
             void updateCastlingRights();
 
@@ -87,6 +80,8 @@ namespace nnchesslib
             void pushCastlingMove(Move move);
             // Pushes a promotion move to the board.
             void pushPromotionMove(Move move);
+            // Pushes an en passant move to the board.
+            void pushEnPassantMove(Move move);
             // Pushes a regular move to the board.
             void pushRegularMove(Move move);
             // Pushes a move to the board.
@@ -96,6 +91,11 @@ namespace nnchesslib
 
             // Returns the opposite color: BLACK -> WHITE
             Color getOppositeColor(Color color);
+
+            // Get char representation of a piece at an index.
+            std::string getPieceChar(int i);
+            // Board to fen conversion.
+            std::string convertToFen();
     };
 }
 
