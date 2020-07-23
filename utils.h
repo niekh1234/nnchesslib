@@ -12,7 +12,8 @@ namespace nnchesslib{
 
     int bitScanReverse(U64 board);
 
-    extern int getSquare(std::string square);
+    int getSquareInt(std::string square);
+    std::string getSquareString(int square);
 }
 
 #endif

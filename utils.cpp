@@ -2,7 +2,7 @@
 #include <string>
 #include <utils.h>
 #include <types.h>
-#include <map>
+#include <cassert>
 
 using namespace nnchesslib;
 
@@ -29,9 +29,20 @@ extern int nnchesslib::bitScanReverse(U64 board)
 }
 
 // converts e.g. 'e2' to 12
-extern int nnchesslib::getSquare(std::string square)
+int nnchesslib::getSquareInt(std::string square)
 {
     int file = square.at(0) - 97;
     int rank = square.at(1) - '0';
     return file + (rank - 1) * 8;
+}
+
+std::string nnchesslib::getSquareString(int square)
+{
+    assert(square >= 0 && square <= 63);
+    int file = square % 8;
+    int rank = square / 8 + 1;
+
+    const char* files = "abcdefgh";
+
+    return files[file] + std::to_string(rank);
 }

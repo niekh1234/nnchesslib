@@ -94,7 +94,7 @@ namespace nnchesslib
             std::string convertToFen();
 
             // Creating moves by parsing uci strings.
-            Move createUci(std::string uci);
+            Move fromUci(std::string uci);
     };
 }
 

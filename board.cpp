@@ -145,8 +145,8 @@ bool ChessBoard::isValidFen(std::string fen)
     // setting en passant bitboard.
     if(enpassant != "-")
     {
-        if(boardinfo.whiteToMove)  boardinfo.whiteEnPassantTarget.set(getSquare(enpassant), true);
-        if(!boardinfo.whiteToMove) boardinfo.blackEnPassantTarget.set(getSquare(enpassant), true);
+        if(boardinfo.whiteToMove)  boardinfo.whiteEnPassantTarget.set(getSquareInt(enpassant), true);
+        if(!boardinfo.whiteToMove) boardinfo.blackEnPassantTarget.set(getSquareInt(enpassant), true);
     }
     // All checks passed
     return true;
@@ -643,12 +643,12 @@ std::string ChessBoard::convertToFen()
 }
 
 // creates Move classes from uci string representation that are relevant for board (promotions, castling, en passant)
-Move ChessBoard::createUci(std::string move)
+Move ChessBoard::fromUci(std::string move)
 {
     assert(move.size() <= 5);
 
-    int from = getSquare(move.substr(0,2));
-    int to = getSquare(move.substr(2,2));
+    int from = getSquareInt(move.substr(0,2));
+    int to = getSquareInt(move.substr(2,2));
 
     // promotion ("e7e8q"), these moves are different because they have a size of 5
     if(move.size() == 5)

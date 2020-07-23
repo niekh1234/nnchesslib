@@ -25,6 +25,8 @@ namespace nnchesslib
     Move createMove(int from, int to, PieceType p);
     Move createMove(int from, int to, MoveType mt);
 
+    std::string toUci(Move m);
+
     void printMove(Move m);
 }
 #endif

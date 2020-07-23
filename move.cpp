@@ -1,5 +1,7 @@
 #include <move.h>
+#include <string>
 #include <iostream>
+#include <utils.h>
 
 using namespace nnchesslib;
 
@@ -36,6 +38,34 @@ Move nnchesslib::createMove(int from, int to, PieceType p)
 Move nnchesslib::createMove(int from, int to, MoveType mt)
 {
     return (mt << 14) + (from << 6) + to;
+}
+
+std::string nnchesslib::toUci(Move m)
+{
+    std::string from = getSquareString(from_Square(m));
+    std::string to = getSquareString(to_Square(m));
+
+    std::string output = from + to;
+
+    if(moveType(m) == PROMOTION)
+    {
+        switch(movePromotionType(m))
+        {
+            case QUEEN:
+                output+="q";
+                break;
+            case KNIGHT:
+                output+="n";
+                break;
+            case BISHOP:
+                output+="b";
+                break;
+            case ROOK:
+                output+="r";
+                break;
+        }
+    }
+    return output;
 }
 
 void nnchesslib::printMove(Move m)
