@@ -2,6 +2,7 @@ Todo!
 [ x ] change 50 move rule.
 [ x ] en passant
 [ x ] board to fen representation (oke maat doe ik wel ff xDDDDDDDDDD)
-[   ] pop move
+[   ] automatically determine if an inputted move is a castle, promotion or en passant instead of specifying it.
+[ x ] pop move
 [   ] pushCastlingMove even opnieuw maken want echt trash
 [   ] Comment everything

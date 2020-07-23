@@ -92,6 +92,9 @@ namespace nnchesslib
             std::string getPieceChar(int i);
             // Board to fen conversion.
             std::string convertToFen();
+
+            // Creating moves by parsing uci strings.
+            Move createUci(std::string uci);
     };
 }
 

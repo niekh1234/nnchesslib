@@ -145,8 +145,8 @@ bool ChessBoard::isValidFen(std::string fen)
     // setting en passant bitboard.
     if(enpassant != "-")
     {
-        if(boardinfo.whiteToMove)  boardinfo.whiteEnPassantTarget.set(getEPSquare(enpassant), true);
-        if(!boardinfo.whiteToMove) boardinfo.blackEnPassantTarget.set(getEPSquare(enpassant), true);
+        if(boardinfo.whiteToMove)  boardinfo.whiteEnPassantTarget.set(getSquare(enpassant), true);
+        if(!boardinfo.whiteToMove) boardinfo.blackEnPassantTarget.set(getSquare(enpassant), true);
     }
     // All checks passed
     return true;
@@ -639,4 +639,47 @@ std::string ChessBoard::convertToFen()
     fen += std::to_string(boardinfo.plyCount);
 
     return fen;
+}
+
+// creates Move classes from uci string representation that are relevant for board (promotions, castling, en passant)
+Move ChessBoard::createUci(std::string move)
+{
+    assert(move.size() <= 5);
+
+    int from = getSquare(move.substr(0,2));
+    int to = getSquare(move.substr(2,2));
+
+    // promotion ("e7e8q"), these moves are different because they have a size of 5
+    if(move.size() == 5)
+    {
+        char promotedTo = move.back();
+
+        switch(promotedTo)
+        {
+            case 'q':
+                return createMove(from, to, QUEEN);
+                break;
+            case 'n':
+                return createMove(from, to, KNIGHT);
+                break;
+            case 'b':
+                return createMove(from, to, BISHOP);
+                break;
+            case 'r':
+                return createMove(from, to, ROOK);
+                break;
+        }
+    }
+    // castling moves: check if the move is on the castling squares and if the king is moved.
+    if(from == E1 && to == G1 && (getPieceOnSquare(from)->board & boardinfo.kings.board)) return createMove(from, to, CASTLING);
+    else if(from == E1 && to == C1 && (getPieceOnSquare(from)->board & boardinfo.kings.board)) return createMove(from, to, CASTLING);
+    else if(from == E8 && to == G8 && (getPieceOnSquare(from)->board & boardinfo.kings.board)) return createMove(from, to, CASTLING);
+    else if(from == E8 && to == C8 && (getPieceOnSquare(from)->board & boardinfo.kings.board)) return createMove(from, to, CASTLING);
+
+    // en passant moves
+    if(boardinfo.blackEnPassantTarget.get(to) && getBoard(BLACK, PAWN).get(from)) return createMove(from, to, ENPASSANT);
+    else if(boardinfo.whiteEnPassantTarget.get(to) && getBoard(WHITE, PAWN).get(from)) return createMove(from, to, ENPASSANT);
+
+    // normal move
+    return createMove(from, to, NORMAL);
 }

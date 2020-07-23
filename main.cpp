@@ -6,6 +6,7 @@
 #include <attacks.h>
 #include <movegen.h>
 #include <bitset>
+#include <string>
 
 using namespace nnchesslib;
 
@@ -33,11 +34,9 @@ int main(int argc, char *argv[])
     test.boardinfo.whiteEnPassantTarget.printDebug();
     MoveList easy = genLegalMoves(test);
 
-    test.pushMove(createMove(E4, D3, ENPASSANT));
     test.print();
 
-    test.popMove();
-    test.print();
+    Move lmao = test.createUci("e4d3");
 
     return 0;
 }
