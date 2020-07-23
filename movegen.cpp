@@ -23,7 +23,6 @@ MoveList nnchesslib::genLegalMoves(ChessBoard board)
 
         if(!temp.kingInCheck(boardTurn)) 
         {
-            temp.print();
             legalMoves.push_back(move);
         }
     }
@@ -150,7 +149,7 @@ void nnchesslib::genWhitePawnCaptures(ChessBoard board, MoveList& moveList, BitB
         BitBoard pawnAttacks = Attacks::getNonSlidingAttacks(index, WHITE, PAWN) & black.board;
 
         // getting en passant move by looking at if a white pawn is attacking a predefined en passant square ('under' the pawn, actually it is above the pawn because it is a black pawn)
-        BitBoard enPassant = Attacks::getNonSlidingAttacks(index, WHITE, PAWN) & board.whiteEnPassantTarget.board;
+        BitBoard enPassant = Attacks::getNonSlidingAttacks(index, WHITE, PAWN) & board.boardinfo.whiteEnPassantTarget.board;
         if(enPassant.board)
         {
             int epIndex = popLsb(enPassant.board);
@@ -268,7 +267,7 @@ void nnchesslib::genBlackPawnCaptures(ChessBoard board, MoveList& moveList, BitB
         // checking whether there is an attack on the eighth rank.
 
         // getting en passant move by looking at if a white pawn is attacking a predefined en passant square ('above' the pawn, actually it is above the pawn because it is a white pawn)
-        BitBoard enPassant = Attacks::getNonSlidingAttacks(index, BLACK, PAWN) & board.blackEnPassantTarget.board;
+        BitBoard enPassant = Attacks::getNonSlidingAttacks(index, BLACK, PAWN) & board.boardinfo.blackEnPassantTarget.board;
         if(enPassant.board)
         {
             int epIndex = popLsb(enPassant.board);
@@ -402,7 +401,7 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
     {
         // white queenside:
         bool attackedSquaresQS = board.squareAttacked(C1, color) || board.squareAttacked(D1, color) || board.squareAttacked(E1, color);
-        if(board.whiteCastleLong && !blockers.get(B1) && !blockers.get(C1) && !blockers.get(D1) && !attackedSquaresQS)
+        if(board.boardinfo.whiteCastleLong && !blockers.get(B1) && !blockers.get(C1) && !blockers.get(D1) && !attackedSquaresQS)
         {
             Move move = createMove(E1, C1, CASTLING);
             moveList.push_back(move);
@@ -411,7 +410,7 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
         // white kingside:
         bool attackedSquaresKS = board.squareAttacked(F1, color) || board.squareAttacked(G1, color) || board.squareAttacked(E1, color);
         if(attackedSquaresQS) std::cout<<"no attackers XDDDDDDDDDDDDD"<<std::endl;
-        if(board.whiteCastleShort && !blockers.get(F1) && !blockers.get(G1) && !attackedSquaresKS)
+        if(board.boardinfo.whiteCastleShort && !blockers.get(F1) && !blockers.get(G1) && !attackedSquaresKS)
         {
             Move move = createMove(E1, G1, CASTLING);
             moveList.push_back(move);
@@ -422,7 +421,7 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
     {
         // black queenside:
         bool attackedSquaresQS = board.squareAttacked(C8, color) || board.squareAttacked(D8, color) || board.squareAttacked(E8, color);
-        if(board.blackCastleLong && !blockers.get(B8) && !blockers.get(C8) && !blockers.get(D8) && !attackedSquaresQS)
+        if(board.boardinfo.blackCastleLong && !blockers.get(B8) && !blockers.get(C8) && !blockers.get(D8) && !attackedSquaresQS)
         {
             Move move = createMove(E8, C8, CASTLING);
             moveList.push_back(move);
@@ -430,7 +429,7 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
         } 
         // black kingside:
         bool attackedSquaresKS = board.squareAttacked(F8, color) || board.squareAttacked(G8, color) || board.squareAttacked(E8, color);
-        if(board.blackCastleShort && !blockers.get(F8) && !blockers.get(G8) && !attackedSquaresKS)
+        if(board.boardinfo.blackCastleShort && !blockers.get(F8) && !blockers.get(G8) && !attackedSquaresKS)
         {
             Move move = createMove(E8, G8, CASTLING);
             moveList.push_back(move);

@@ -9,41 +9,37 @@ namespace nnchesslib
 {
     struct BoardInfo
     {
-        // Uncopied from move
-        BoardInfo* previousBoard;
+        BitBoard whitePieces;
+        BitBoard blackPieces;
+        BitBoard pawns;
+        BitBoard knights;
+        BitBoard bishops;
+        BitBoard rooks;
+        BitBoard queens;
+        BitBoard kings;
+
+        bool whiteToMove = true;
+
+        bool whiteCastleShort = false;
+        bool whiteCastleLong = false;
+        bool blackCastleShort = false;
+        bool blackCastleLong = false;   
+        int fiftyMoveRule;
+        int plyCount;
         int repetition;
+
+        BitBoard whiteEnPassantTarget;
+        BitBoard blackEnPassantTarget;
     };
 
     class ChessBoard
     {
         private:
-            // ChessBoard class has 8 different bitboards, one for each piece, and one for black and white.
-            BitBoard whitePieces;
-            BitBoard blackPieces;
-            BitBoard pawns;
-            BitBoard knights;
-            BitBoard bishops;
-            BitBoard rooks;
-            BitBoard queens;
-            BitBoard kings;
-
-            bool whiteToMove = true;
-
             // Generate bitboards corresponding to a given fen.
             void generateBitBoards(std::string fen);
         public:
-            bool whiteCastleShort = false;
-            bool whiteCastleLong = false;
-            bool blackCastleShort = false;
-            bool blackCastleLong = false;   
-            int fiftyMoveRule;
-            int plyCount;
-            int repetition;
-
-            BitBoard whiteEnPassantTarget;
-            BitBoard blackEnPassantTarget;
-
-            BoardInfo* previousBoard;
+            BoardInfo boardinfo;
+            BoardInfo previousBoard;
 
             ChessBoard();
             ChessBoard(std::string fenRepresentation);

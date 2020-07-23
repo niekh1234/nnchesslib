@@ -30,9 +30,13 @@ int main(int argc, char *argv[])
 
     ChessBoard test("rnbqkbnr/pppp1ppp/8/8/3Pp3/4P2P/PPP2PP1/RNBQKBNR b KQkq d3 0 3");
 
-    test.whiteEnPassantTarget.printDebug();
+    test.boardinfo.whiteEnPassantTarget.printDebug();
     MoveList easy = genLegalMoves(test);
 
+    test.pushMove(createMove(E4, D3, ENPASSANT));
+    test.print();
+
+    test.popMove();
     test.print();
 
     return 0;

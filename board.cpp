@@ -119,8 +119,8 @@ bool ChessBoard::isValidFen(std::string fen)
     // put this in dedicated function in the future.
 
     // changing who's turn it is.
-    if(sideToMove == "w") whiteToMove = true;
-    else whiteToMove = false;
+    if(sideToMove == "w") boardinfo.whiteToMove = true;
+    else boardinfo.whiteToMove = false;
 
     // setting the castling rights bools
     for (auto c : castleRights)
@@ -128,16 +128,16 @@ bool ChessBoard::isValidFen(std::string fen)
         switch(c)
         {
             case 'K':
-                whiteCastleShort = true;
+                boardinfo.whiteCastleShort = true;
                 break;
             case 'Q':
-                whiteCastleLong = true;
+                boardinfo.whiteCastleLong = true;
                 break;
             case 'k':
-                blackCastleShort = true;
+                boardinfo.blackCastleShort = true;
                 break;
             case 'q':
-                blackCastleLong = true;
+                boardinfo.blackCastleLong = true;
                 break;
         }
     }
@@ -145,8 +145,8 @@ bool ChessBoard::isValidFen(std::string fen)
     // setting en passant bitboard.
     if(enpassant != "-")
     {
-        if(whiteToMove)  whiteEnPassantTarget.set(getEPSquare(enpassant), true);
-        if(!whiteToMove) blackEnPassantTarget.set(getEPSquare(enpassant), true);
+        if(boardinfo.whiteToMove)  boardinfo.whiteEnPassantTarget.set(getEPSquare(enpassant), true);
+        if(!boardinfo.whiteToMove) boardinfo.blackEnPassantTarget.set(getEPSquare(enpassant), true);
     }
     // All checks passed
     return true;
@@ -177,30 +177,30 @@ void ChessBoard::generateBitBoards(std::string fen)
         {
             // Generate bitboard for white and black
             // this is reversed atm.
-            if (board[i] >= 'A' && board[i] <= 'Z') whitePieces.set(bitIndex, true);
-            if (board[i] >= 'a' && board[i] <= 'z') blackPieces.set(bitIndex, true);
+            if (board[i] >= 'A' && board[i] <= 'Z') boardinfo.whitePieces.set(bitIndex, true);
+            if (board[i] >= 'a' && board[i] <= 'z') boardinfo.blackPieces.set(bitIndex, true);
 
             // Generate bitboard for pieces
-            if (board[i] == 'N' || board[i] == 'n') knights.set(bitIndex, true);
-            if (board[i] == 'B' || board[i] == 'b') bishops.set(bitIndex, true);
-            if (board[i] == 'R' || board[i] == 'r') rooks.set(bitIndex, true);
-            if (board[i] == 'Q' || board[i] == 'q') queens.set(bitIndex, true);
-            if (board[i] == 'K' || board[i] == 'k') kings.set(bitIndex, true);
-            if (board[i] == 'P' || board[i] == 'p') pawns.set(bitIndex, true);
+            if (board[i] == 'N' || board[i] == 'n') boardinfo.knights.set(bitIndex, true);
+            if (board[i] == 'B' || board[i] == 'b') boardinfo.bishops.set(bitIndex, true);
+            if (board[i] == 'R' || board[i] == 'r') boardinfo.rooks.set(bitIndex, true);
+            if (board[i] == 'Q' || board[i] == 'q') boardinfo.queens.set(bitIndex, true);
+            if (board[i] == 'K' || board[i] == 'k') boardinfo.kings.set(bitIndex, true);
+            if (board[i] == 'P' || board[i] == 'p') boardinfo.pawns.set(bitIndex, true);
 
             bitIndex += 1;
         }
     }
     // cannot think of another way to do this yet.
     // The problem is that the code above generates the board but mirrorred vertically.
-    knights = knights.flipVertical();
-    bishops = bishops.flipVertical();
-    rooks = rooks.flipVertical();
-    queens = queens.flipVertical();
-    kings = kings.flipVertical();
-    pawns = pawns.flipVertical();
-    whitePieces = whitePieces.flipVertical();
-    blackPieces = blackPieces.flipVertical();
+    boardinfo.knights = boardinfo.knights.flipVertical();
+    boardinfo.bishops = boardinfo.bishops.flipVertical();
+    boardinfo.rooks = boardinfo.rooks.flipVertical();
+    boardinfo.queens = boardinfo.queens.flipVertical();
+    boardinfo.kings = boardinfo.kings.flipVertical();
+    boardinfo.pawns = boardinfo.pawns.flipVertical();
+    boardinfo.whitePieces = boardinfo.whitePieces.flipVertical();
+    boardinfo.blackPieces = boardinfo.blackPieces.flipVertical();
 }
 
 //function for printing / combining all the bitboards to form a readable board. 
@@ -209,23 +209,23 @@ void ChessBoard::print()
     std::string output;
     std::string finalOutput;
 
-    BitBoard occupied = whitePieces.board | blackPieces.board;
+    BitBoard occupied = boardinfo.whitePieces.board | boardinfo.blackPieces.board;
     for(int i = 0; i <= 63; i++)
     {
         if(occupied.get(i))
         {
-            if(BitBoard(pawns.board & whitePieces.board).get(i)) output+=" P ";
-            if(BitBoard(knights.board & whitePieces.board).get(i)) output+=" N ";
-            if(BitBoard(bishops.board & whitePieces.board).get(i)) output+=" B ";
-            if(BitBoard(rooks.board & whitePieces.board).get(i)) output+=" R ";
-            if(BitBoard(queens.board & whitePieces.board).get(i)) output+=" Q ";
-            if(BitBoard(kings.board & whitePieces.board).get(i)) output+=" K ";
-            if(BitBoard(pawns.board & blackPieces.board).get(i)) output+=" p ";
-            if(BitBoard(knights.board & blackPieces.board).get(i)) output+=" n ";
-            if(BitBoard(bishops.board & blackPieces.board).get(i)) output+=" b ";
-            if(BitBoard(rooks.board & blackPieces.board).get(i)) output+=" r ";
-            if(BitBoard(queens.board & blackPieces.board).get(i)) output+=" q ";
-            if(BitBoard(kings.board & blackPieces.board).get(i)) output+=" k ";
+            if(BitBoard(boardinfo.pawns.board & boardinfo.whitePieces.board).get(i)) output+=" P ";
+            if(BitBoard(boardinfo.knights.board & boardinfo.whitePieces.board).get(i)) output+=" N ";
+            if(BitBoard(boardinfo.bishops.board & boardinfo.whitePieces.board).get(i)) output+=" B ";
+            if(BitBoard(boardinfo.rooks.board & boardinfo.whitePieces.board).get(i)) output+=" R ";
+            if(BitBoard(boardinfo.queens.board & boardinfo.whitePieces.board).get(i)) output+=" Q ";
+            if(BitBoard(boardinfo.kings.board & boardinfo.whitePieces.board).get(i)) output+=" K ";
+            if(BitBoard(boardinfo.pawns.board & boardinfo.blackPieces.board).get(i)) output+=" p ";
+            if(BitBoard(boardinfo.knights.board & boardinfo.blackPieces.board).get(i)) output+=" n ";
+            if(BitBoard(boardinfo.bishops.board & boardinfo.blackPieces.board).get(i)) output+=" b ";
+            if(BitBoard(boardinfo.rooks.board & boardinfo.blackPieces.board).get(i)) output+=" r ";
+            if(BitBoard(boardinfo.queens.board & boardinfo.blackPieces.board).get(i)) output+=" q ";
+            if(BitBoard(boardinfo.kings.board & boardinfo.blackPieces.board).get(i)) output+=" k ";
         } 
         else
         {
@@ -246,30 +246,30 @@ BitBoard ChessBoard::getBoard(Color color, PieceType piece)
 {
     assert(color == WHITE || color == BLACK);
 
-    U64 boardColor = whitePieces.board;
-    if(color == BLACK) boardColor = blackPieces.board;
+    U64 boardColor = boardinfo.whitePieces.board;
+    if(color == BLACK) boardColor = boardinfo.blackPieces.board;
 
     switch(piece){
         case PAWN:
-            return (boardColor & pawns.board);
+            return (boardColor & boardinfo.pawns.board);
             break;
         case KNIGHT:
-            return (boardColor & knights.board);
+            return (boardColor & boardinfo.knights.board);
             break;
         case BISHOP:
-            return (boardColor & bishops.board);
+            return (boardColor & boardinfo.bishops.board);
             break;
         case ROOK:
-            return (boardColor & rooks.board);
+            return (boardColor & boardinfo.rooks.board);
             break;
         case QUEEN:
-            return (boardColor & queens.board);
+            return (boardColor & boardinfo.queens.board);
             break;
         case KING:
-            return (boardColor & kings.board);
+            return (boardColor & boardinfo.kings.board);
             break;
         default:
-            return (whitePieces.board & pawns.board);
+            return (boardinfo.whitePieces.board & boardinfo.pawns.board);
             break;
     }
 }
@@ -278,35 +278,35 @@ BitBoard ChessBoard::getBoard(Color color)
 {
     assert(color == WHITE || color == BLACK);
 
-    if(color == WHITE) return (whitePieces.board);
-    return (blackPieces.board);
+    if(color == WHITE) return (boardinfo.whitePieces.board);
+    return (boardinfo.blackPieces.board);
 }
 
 BitBoard ChessBoard::getBlockers()
 {
-    return (whitePieces.board | blackPieces.board);
+    return (boardinfo.whitePieces.board | boardinfo.blackPieces.board);
 }
 
 bool ChessBoard::getWhiteToMove()
 {
-    return whiteToMove;
+    return boardinfo.whiteToMove;
 }
 
 BitBoard * ChessBoard::getPieceOnSquare(int index)
 {
-    if(pawns.get(index)) return(&pawns);
-    if(knights.get(index)) return(&knights);
-    if(bishops.get(index)) return(&bishops);
-    if(rooks.get(index)) return(&rooks);
-    if(queens.get(index)) return(&queens);
-    if(kings.get(index)) return(&kings);
+    if(boardinfo.pawns.get(index)) return(&boardinfo.pawns);
+    if(boardinfo.knights.get(index)) return(&boardinfo.knights);
+    if(boardinfo.bishops.get(index)) return(&boardinfo.bishops);
+    if(boardinfo.rooks.get(index)) return(&boardinfo.rooks);
+    if(boardinfo.queens.get(index)) return(&boardinfo.queens);
+    if(boardinfo.kings.get(index)) return(&boardinfo.kings);
     return 0;
 }
 
 BitBoard * ChessBoard::getColorOnSquare(int index)
 {
-    if(whitePieces.get(index)) return(&whitePieces);
-    if(blackPieces.get(index)) return(&blackPieces);
+    if(boardinfo.whitePieces.get(index)) return(&boardinfo.whitePieces);
+    if(boardinfo.blackPieces.get(index)) return(&boardinfo.blackPieces);
     return 0;
 }
 
@@ -345,45 +345,45 @@ bool ChessBoard::squareAttacked(int square, Color color)
 void ChessBoard::setEnPassantPossibility(BitBoard ourPieces, int from, int to)
 {
     // There can only be one target at the time, so clearing the boards every move.
-    whiteEnPassantTarget.board = (U64)0;
-    blackEnPassantTarget.board = (U64)0;
+    boardinfo.whiteEnPassantTarget.board = (U64)0;
+    boardinfo.blackEnPassantTarget.board = (U64)0;
     // black en passant possibility (white has double moved)
-    if((from / 8 == 1 && to / 8 == 3) && ourPieces.board & pawns.board)
+    if((from / 8 == 1 && to / 8 == 3) && ourPieces.board & boardinfo.pawns.board)
     {
         // set the square under the pawn as a target for a black pawn (in a seperate bitboard)
-        blackEnPassantTarget.set(to - 8, true);
+        boardinfo.blackEnPassantTarget.set(to - 8, true);
     }
     // white en passant possibility (black has double moved)
-    else if((from / 8 == 6 && to / 8 == 4) && ourPieces.board & pawns.board)
+    else if((from / 8 == 6 && to / 8 == 4) && ourPieces.board & boardinfo.pawns.board)
     {
-        whiteEnPassantTarget.set(to + 8, true);
+        boardinfo.whiteEnPassantTarget.set(to + 8, true);
     }
 }
 
 void ChessBoard::updateCastlingRights()
 {
     // if the rooks have moved:
-    bool whiteQSRook = BitBoard(whitePieces.board & rooks.board).get(A1);
-    bool whiteKSRook = BitBoard(whitePieces.board & rooks.board).get(H1);
-    bool blackQSRook = BitBoard(blackPieces.board & rooks.board).get(A8);
-    bool blackKSRook = BitBoard(blackPieces.board & rooks.board).get(H8);
+    bool whiteQSRook = BitBoard(boardinfo.whitePieces.board & boardinfo.rooks.board).get(A1);
+    bool whiteKSRook = BitBoard(boardinfo.whitePieces.board & boardinfo.rooks.board).get(H1);
+    bool blackQSRook = BitBoard(boardinfo.blackPieces.board & boardinfo.rooks.board).get(A8);
+    bool blackKSRook = BitBoard(boardinfo.blackPieces.board & boardinfo.rooks.board).get(H8);
     // castling rights can only go from true to false. If you move a rook back into proper position you cannot castle anymore.
-    if(!whiteQSRook && whiteCastleLong) whiteCastleLong = false;
-    if(!whiteKSRook && whiteCastleShort) whiteCastleShort = false;
-    if(!blackQSRook && blackCastleLong) blackCastleLong = false;
-    if(!blackKSRook && blackCastleShort) blackCastleShort = false;
+    if(!whiteQSRook && boardinfo.whiteCastleLong) boardinfo.whiteCastleLong = false;
+    if(!whiteKSRook && boardinfo.whiteCastleShort) boardinfo.whiteCastleShort = false;
+    if(!blackQSRook && boardinfo.blackCastleLong) boardinfo.blackCastleLong = false;
+    if(!blackKSRook && boardinfo.blackCastleShort) boardinfo.blackCastleShort = false;
 
     // if the kings have moved:
-    bool whiteKing = BitBoard(whitePieces.board & kings.board).get(E1);
-    bool blackKing = BitBoard(blackPieces.board & kings.board).get(E8);
-    if(!whiteKing && (whiteCastleLong || whiteCastleShort))
+    bool whiteKing = BitBoard(boardinfo.whitePieces.board & boardinfo.kings.board).get(E1);
+    bool blackKing = BitBoard(boardinfo.blackPieces.board & boardinfo.kings.board).get(E8);
+    if(!whiteKing && (boardinfo.whiteCastleLong || boardinfo.whiteCastleShort))
     {
-        whiteCastleLong = false;
-        whiteCastleShort = false;
-    } else if (!blackKing && (blackCastleLong || blackCastleShort))
+        boardinfo.whiteCastleLong = false;
+        boardinfo.whiteCastleShort = false;
+    } else if (!blackKing && (boardinfo.blackCastleLong || boardinfo.blackCastleShort))
     {
-        blackCastleLong = false;
-        blackCastleShort = false;
+        boardinfo.blackCastleLong = false;
+        boardinfo.blackCastleShort = false;
     }
 }
 
@@ -399,10 +399,10 @@ void ChessBoard::pushCastlingMove(Move move)
     // white ks castle
     if(to == 6)
     {
-        kings.set(E1, false);
-        rooks.set(H1, false);
-        kings.set(G1, true);
-        rooks.set(F1, true);
+        boardinfo.kings.set(E1, false);
+        boardinfo.rooks.set(H1, false);
+        boardinfo.kings.set(G1, true);
+        boardinfo.rooks.set(F1, true);
         ourPieces->set(E1, false);
         ourPieces->set(H1, false);
         ourPieces->set(G1, true);
@@ -411,10 +411,10 @@ void ChessBoard::pushCastlingMove(Move move)
     // white qs castle
     else if (to == 2)
     {
-        kings.set(E1, false);
-        rooks.set(A1, false);
-        kings.set(C1, true);
-        rooks.set(D1, true);
+        boardinfo.kings.set(E1, false);
+        boardinfo.rooks.set(A1, false);
+        boardinfo.kings.set(C1, true);
+        boardinfo.rooks.set(D1, true);
         ourPieces->set(E1, false);
         ourPieces->set(A1, false);
         ourPieces->set(C1, true);
@@ -422,10 +422,10 @@ void ChessBoard::pushCastlingMove(Move move)
     }
     else if (to == 58)
     {
-        kings.set(E8, false);
-        rooks.set(H8, false);
-        kings.set(G8, true);
-        rooks.set(F8, true);
+        boardinfo.kings.set(E8, false);
+        boardinfo.rooks.set(H8, false);
+        boardinfo.kings.set(G8, true);
+        boardinfo.rooks.set(F8, true);
         ourPieces->set(E8, false);
         ourPieces->set(H8, false);
         ourPieces->set(G8, true);
@@ -434,10 +434,10 @@ void ChessBoard::pushCastlingMove(Move move)
     // black qs castle
     else if (to == 62)
     {
-        kings.set(E8, false);
-        rooks.set(A8, false);
-        kings.set(C8, true);
-        rooks.set(D8, true);
+        boardinfo.kings.set(E8, false);
+        boardinfo.rooks.set(A8, false);
+        boardinfo.kings.set(C8, true);
+        boardinfo.rooks.set(D8, true);
         ourPieces->set(E8, false);
         ourPieces->set(A8, false);
         ourPieces->set(C8, true);
@@ -456,14 +456,14 @@ void ChessBoard::pushPromotionMove(Move move)
 
     PieceType piece = movePromotionType(move);
 
-    pawns.set(from, false);
+    boardinfo.pawns.set(from, false);
     ourPieces->set(from, false);
     ourPieces->set(to, true);
 
-    if(piece == QUEEN) queens.set(to, true);
-    if(piece == ROOK) rooks.set(to, true);
-    if(piece == BISHOP) bishops.set(to, true);
-    if(piece == KNIGHT) knights.set(to, true);
+    if(piece == QUEEN) boardinfo.queens.set(to, true);
+    if(piece == ROOK) boardinfo.rooks.set(to, true);
+    if(piece == BISHOP) boardinfo.bishops.set(to, true);
+    if(piece == KNIGHT) boardinfo.knights.set(to, true);
 }
 
 void ChessBoard::pushEnPassantMove(Move move)
@@ -477,22 +477,22 @@ void ChessBoard::pushEnPassantMove(Move move)
     if(from >= A5)
     {
         BitBoard * theirPiece = getPieceOnSquare(to - 8);
-        whitePieces.set(from, false);
-        whitePieces.set(to, true);
+        boardinfo.whitePieces.set(from, false);
+        boardinfo.whitePieces.set(to, true);
         ourPieceType->set(from, false);
         ourPieceType->set(to, true);
         theirPiece->set(to - 8, false);
-        blackPieces.set(to - 8, false);
+        boardinfo.blackPieces.set(to - 8, false);
     } 
     else if(from <= H4)
     {
         BitBoard * theirPiece = getPieceOnSquare(to + 8);
-        blackPieces.set(from, false);
-        blackPieces.set(to, true);
+        boardinfo.blackPieces.set(from, false);
+        boardinfo.blackPieces.set(to, true);
         ourPieceType->set(from, false);
         ourPieceType->set(to, true);
         theirPiece->set(to + 8, false);
-        whitePieces.set(to + 8, false);
+        boardinfo.whitePieces.set(to + 8, false);
     }
 }
 
@@ -510,10 +510,10 @@ void ChessBoard::pushRegularMove(Move move)
     // gets the bitboard corresponding to our piece color.
     BitBoard * ourPieces = getColorOnSquare(from);
 
-    fiftyMoveRule++;
+    boardinfo.fiftyMoveRule++;
 
-    if (pawns.board & ourPieceType->board)    
-        fiftyMoveRule = 0;
+    if (boardinfo.pawns.board & ourPieceType->board)    
+        boardinfo.fiftyMoveRule = 0;
 
     if(isCapture)
     {
@@ -521,7 +521,7 @@ void ChessBoard::pushRegularMove(Move move)
 
         BitBoard * theirPieces = getColorOnSquare(to);
         theirPieces->set(to, false);
-        fiftyMoveRule = 0;
+        boardinfo.fiftyMoveRule = 0;
     }
     // changing to the position of a piece on one of the piece boards: pawn, knight, rook king etc.
     ourPieceType->set(from, false);
@@ -535,6 +535,8 @@ void ChessBoard::pushRegularMove(Move move)
 
 void ChessBoard::pushMove(Move move)
 {
+    // setting previous board information the the current position when there has not been made a move.
+    previousBoard = boardinfo;
     // getting the movetype
     MoveType type = moveType(move);
 
@@ -545,16 +547,16 @@ void ChessBoard::pushMove(Move move)
 
     // Update board information
     updateCastlingRights();
-    whiteToMove = !whiteToMove;
+    boardinfo.whiteToMove = !boardinfo.whiteToMove;
 
-    if (whiteToMove)
-        plyCount++;
+    if (boardinfo.whiteToMove)
+        boardinfo.plyCount++;
 }
 
 // removes one move from the list.
 void ChessBoard::popMove()
 {
-
+    boardinfo = previousBoard;
 }
 
 Color ChessBoard::getOppositeColor(Color color)
@@ -565,18 +567,18 @@ Color ChessBoard::getOppositeColor(Color color)
 
 std::string ChessBoard::getPieceChar(int i)
 {
-    if(BitBoard(pawns.board & whitePieces.board).get(i)) return "P";
-    if(BitBoard(knights.board & whitePieces.board).get(i)) return "N";
-    if(BitBoard(bishops.board & whitePieces.board).get(i)) return "B";
-    if(BitBoard(rooks.board & whitePieces.board).get(i)) return "R";
-    if(BitBoard(queens.board & whitePieces.board).get(i)) return "Q";
-    if(BitBoard(kings.board & whitePieces.board).get(i)) return "K";
-    if(BitBoard(pawns.board & blackPieces.board).get(i)) return "p";
-    if(BitBoard(knights.board & blackPieces.board).get(i)) return "n";
-    if(BitBoard(bishops.board & blackPieces.board).get(i)) return "b";
-    if(BitBoard(rooks.board & blackPieces.board).get(i)) return "r";
-    if(BitBoard(queens.board & blackPieces.board).get(i)) return "q";
-    if(BitBoard(kings.board & blackPieces.board).get(i)) return "k";
+    if(BitBoard(boardinfo.pawns.board & boardinfo.whitePieces.board).get(i)) return "P";
+    if(BitBoard(boardinfo.knights.board & boardinfo.whitePieces.board).get(i)) return "N";
+    if(BitBoard(boardinfo.bishops.board & boardinfo.whitePieces.board).get(i)) return "B";
+    if(BitBoard(boardinfo.rooks.board & boardinfo.whitePieces.board).get(i)) return "R";
+    if(BitBoard(boardinfo.queens.board & boardinfo.whitePieces.board).get(i)) return "Q";
+    if(BitBoard(boardinfo.kings.board & boardinfo.whitePieces.board).get(i)) return "K";
+    if(BitBoard(boardinfo.pawns.board & boardinfo.blackPieces.board).get(i)) return "p";
+    if(BitBoard(boardinfo.knights.board & boardinfo.blackPieces.board).get(i)) return "n";
+    if(BitBoard(boardinfo.bishops.board & boardinfo.blackPieces.board).get(i)) return "b";
+    if(BitBoard(boardinfo.rooks.board & boardinfo.blackPieces.board).get(i)) return "r";
+    if(BitBoard(boardinfo.queens.board & boardinfo.blackPieces.board).get(i)) return "q";
+    if(BitBoard(boardinfo.kings.board & boardinfo.blackPieces.board).get(i)) return "k";
     return "0";
 }
 
@@ -614,17 +616,17 @@ std::string ChessBoard::convertToFen()
     fen += " ";
 
     // Add side to move
-    whiteToMove ? fen += "w " : fen += "b ";
+    boardinfo.whiteToMove ? fen += "w " : fen += "b ";
     
     // Add castling rights
-    if (!(whiteCastleLong || whiteCastleShort || blackCastleLong || blackCastleShort))
+    if (!(boardinfo.whiteCastleLong || boardinfo.whiteCastleShort || boardinfo.blackCastleLong || boardinfo.blackCastleShort))
         fen += "- ";
     else
     {
-        if (whiteCastleShort) fen += "K";
-        if (whiteCastleLong) fen += "Q";
-        if (blackCastleShort) fen += "k";
-        if (blackCastleLong) fen += "q";
+        if (boardinfo.whiteCastleShort) fen += "K";
+        if (boardinfo.whiteCastleLong) fen += "Q";
+        if (boardinfo.blackCastleShort) fen += "k";
+        if (boardinfo.blackCastleLong) fen += "q";
         fen += " ";
     }
 
@@ -633,8 +635,8 @@ std::string ChessBoard::convertToFen()
 
 
     // Add halfmove clock and fullmove number
-    fen += std::to_string(fiftyMoveRule) + " ";
-    fen += std::to_string(plyCount);
+    fen += std::to_string(boardinfo.fiftyMoveRule) + " ";
+    fen += std::to_string(boardinfo.plyCount);
 
     return fen;
 }
