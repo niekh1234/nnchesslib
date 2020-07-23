@@ -24,9 +24,9 @@ namespace nnchesslib
         bool whiteCastleLong = false;
         bool blackCastleShort = false;
         bool blackCastleLong = false;   
-        int fiftyMoveRule;
-        int plyCount;
-        int repetition;
+        int fiftyMoveRule = 0;
+        int plyCount = 0;
+        int repetition = 0;
 
         BitBoard whiteEnPassantTarget;
         BitBoard blackEnPassantTarget;

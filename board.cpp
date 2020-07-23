@@ -35,7 +35,7 @@ bool ChessBoard::isValidFen(std::string fen)
 {
     // Setup variables
     std::istringstream iss(fen);
-    std::string board, sideToMove, castleRights, enpassant;
+    std::string board, sideToMove, castleRights, enpassant, movecount, plycount;
 
     // check if fen is provided
     if(!iss) return false;
@@ -59,6 +59,13 @@ bool ChessBoard::isValidFen(std::string fen)
         else
             enpassant = "-";
     }
+    
+    iss >> movecount;
+
+    iss >> plycount;
+
+    boardinfo.plyCount = stoi(plycount);
+    boardinfo.fiftyMoveRule = stoi(movecount);
 
     // Let's check that all components of the supposed FEN are OK.
     // Check side to move
