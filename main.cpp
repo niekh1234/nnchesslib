@@ -29,14 +29,13 @@ int main(int argc, char *argv[])
 {
     initAll();
 
-    ChessBoard test("rnbqkbnr/pppp1ppp/8/8/3Pp3/4P2P/PPP2PP1/RNBQKBNR b KQkq d3 0 3");
-
-    test.boardinfo.whiteEnPassantTarget.printDebug();
-    MoveList easy = genLegalMoves(test);
+    ChessBoard test("1k6/8/8/8/8/8/8/R3K3 w - - 0 1");
 
     test.print();
-
-    Move lmao = test.createUci("e4d3");
+    test.pushMove(test.createUci("e1c1"));
+    test.print();
+    test.popMove();
+    test.print();
 
     return 0;
 }

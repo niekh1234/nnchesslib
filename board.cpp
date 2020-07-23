@@ -397,7 +397,7 @@ void ChessBoard::pushCastlingMove(Move move)
     // I already thought of a more efficient way of writing this but cannot be asked at the moment. + this is probably quite fast.
 
     // white ks castle
-    if(to == 6)
+    if(to == 6 && boardinfo.whiteCastleShort)
     {
         boardinfo.kings.set(E1, false);
         boardinfo.rooks.set(H1, false);
@@ -409,7 +409,7 @@ void ChessBoard::pushCastlingMove(Move move)
         ourPieces->set(F1, true);
     } 
     // white qs castle
-    else if (to == 2)
+    else if (to == 2 && boardinfo.whiteCastleLong)
     {
         boardinfo.kings.set(E1, false);
         boardinfo.rooks.set(A1, false);
@@ -420,7 +420,8 @@ void ChessBoard::pushCastlingMove(Move move)
         ourPieces->set(C1, true);
         ourPieces->set(D1, true);
     }
-    else if (to == 58)
+    // black qs castle
+    else if (to == 58 && boardinfo.blackCastleLong)
     {
         boardinfo.kings.set(E8, false);
         boardinfo.rooks.set(H8, false);
@@ -431,8 +432,8 @@ void ChessBoard::pushCastlingMove(Move move)
         ourPieces->set(G8, true);
         ourPieces->set(F8, true);
     } 
-    // black qs castle
-    else if (to == 62)
+    // black ks castle
+    else if (to == 62 && boardinfo.blackCastleShort)
     {
         boardinfo.kings.set(E8, false);
         boardinfo.rooks.set(A8, false);
@@ -442,9 +443,9 @@ void ChessBoard::pushCastlingMove(Move move)
         ourPieces->set(A8, false);
         ourPieces->set(C8, true);
         ourPieces->set(D8, true);
+    } else {
+        std::cout<<"No castling rights!"<<std::endl;
     }
-
-    std::cout<<from<<" to "<<to<<std::endl;
 }
 
 void ChessBoard::pushPromotionMove(Move move)
