@@ -693,6 +693,13 @@ Move ChessBoard::fromUci(std::string move)
     return createMove(from, to, NORMAL);
 }
 
+void ChessBoard::pushFromUci(std::string uci)
+{
+    Move move = fromUci(uci);
+
+    pushMove(move);
+}
+
 bool ChessBoard::isCheckMate()
 {
     MoveList legalMoves = genLegalMoves(*this);
