@@ -29,12 +29,5 @@ void initAll()
 int main(int argc, char *argv[])
 {
     initAll();
-
-    ChessBoard test("1k6/8/8/8/8/8/8/R3K3 w - - 0 1");
-
-    Move bruh = test.fromUci("e7e8q");
-    std::string ucitest = toUci(bruh);
-    std::cout<<ucitest<<std::endl;
-
     return 0;
 }

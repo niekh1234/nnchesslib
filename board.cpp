@@ -10,6 +10,7 @@
 #include <move.h>
 #include <attacks.h>
 #include <utils.h>
+#include <movegen.h>
 
 using namespace nnchesslib;
 
@@ -690,4 +691,12 @@ Move ChessBoard::fromUci(std::string move)
 
     // normal move
     return createMove(from, to, NORMAL);
+}
+
+bool ChessBoard::isCheckMate()
+{
+    MoveList legalMoves = genLegalMoves(*this);
+
+    if(legalMoves.size() == 0) return true;
+    else return false;
 }

@@ -95,6 +95,9 @@ namespace nnchesslib
 
             // Creating moves by parsing uci strings.
             Move fromUci(std::string uci);
+
+            // Returns true if checkmate.
+            bool isCheckMate();
     };
 }
 

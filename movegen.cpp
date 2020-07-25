@@ -26,7 +26,6 @@ MoveList nnchesslib::genLegalMoves(ChessBoard board)
             legalMoves.push_back(move);
         }
     }
-    std::cout<<legalMoves.size()<<std::endl;
     return legalMoves;
 }
 
@@ -405,16 +404,13 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
         {
             Move move = createMove(E1, C1, CASTLING);
             moveList.push_back(move);
-            std::cout<<"white qs\n";
         } 
         // white kingside:
         bool attackedSquaresKS = board.squareAttacked(F1, color) || board.squareAttacked(G1, color) || board.squareAttacked(E1, color);
-        if(attackedSquaresQS) std::cout<<"no attackers XDDDDDDDDDDDDD"<<std::endl;
         if(board.boardinfo.whiteCastleShort && !blockers.get(F1) && !blockers.get(G1) && !attackedSquaresKS)
         {
             Move move = createMove(E1, G1, CASTLING);
             moveList.push_back(move);
-            std::cout<<"white ks\n";
         }
     }
     if(color == BLACK)
@@ -425,7 +421,6 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
         {
             Move move = createMove(E8, C8, CASTLING);
             moveList.push_back(move);
-            std::cout<<"black qs\n";
         } 
         // black kingside:
         bool attackedSquaresKS = board.squareAttacked(F8, color) || board.squareAttacked(G8, color) || board.squareAttacked(E8, color);
@@ -433,7 +428,6 @@ void nnchesslib::genCastlingMoves(ChessBoard board, MoveList& moveList, Color co
         {
             Move move = createMove(E8, G8, CASTLING);
             moveList.push_back(move);
-            std::cout<<"black ks\n";
         }
     }
 }
