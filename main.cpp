@@ -29,5 +29,11 @@ void initAll()
 int main(int argc, char *argv[])
 {
     initAll();
+
+    ChessBoard myBoard = ChessBoard();
+
+    myBoard.pushFromUci("e2e4");
+    
+    myBoard.print();
     return 0;
 }
